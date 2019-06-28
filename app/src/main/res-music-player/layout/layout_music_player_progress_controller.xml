@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/music_current_time"
+        android:layout_width="@dimen/music_player_time_txt_width"
+        android:layout_height="@dimen/music_player_seek_height"
+        android:gravity="center|end"
+        android:text="00:00"
+        android:textSize="@dimen/music_player_txt_size" />
+
+    <SeekBar
+        android:id="@+id/music_control_seek"
+        style="@style/music_seek_style"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/music_player_seek_height"
+        android:layout_marginStart="@dimen/music_player_music_seek_control_margin"
+        android:layout_marginLeft="@dimen/music_player_music_seek_control_margin"
+        android:layout_marginEnd="@dimen/music_player_music_seek_control_margin"
+        android:layout_marginRight="@dimen/music_player_music_seek_control_margin"
+        android:layout_weight="1"
+        android:max="100" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/music_total_time"
+        android:layout_width="@dimen/music_player_time_txt_width"
+        android:layout_height="@dimen/music_player_seek_height"
+        android:gravity="center|start"
+        android:text="00:00"
+        android:textSize="@dimen/music_player_txt_size" />
+</LinearLayout>

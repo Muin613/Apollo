@@ -1,11 +1,13 @@
+package apollo
+
 class Config {
     public final static int ENV_DEV = 0
     public final static int ENV_TEST = 1
     public final static int ENV_ONLINE = 2
     public static int envType = ENV_DEV
 
-    public static String envConfig() {
-        return "\\config\\dev_url_config.gradle"
+    static String envConfig() {
+        return "\\config\\online_url_config.gradle"
 //     switch (envType) {
 //            case ENV_DEV:
 //                return "dev_url_config.gradle"

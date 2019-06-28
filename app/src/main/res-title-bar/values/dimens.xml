@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="title_bar_back_width">45dp</dimen>
+    <dimen name="title_bat_title_size">16sp</dimen>
+    <dimen name="title_bar_share_width">45dp</dimen>
+    <dimen name="title_bar_height">45dp</dimen>
+</resources>

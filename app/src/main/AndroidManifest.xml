@@ -3,22 +3,48 @@
     xmlns:dist="http://schemas.android.com/apk/distribution"
     package="com.munin.music">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <dist:module dist:instant="true" />
 
     <application
+        android:name=".config.ApolloApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/apollo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/apollo_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity android:name=".ui.ApolloLauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="com.munin.music"
+                    android:scheme="ad" />
+            </intent-filter>
         </activity>
+        <!--主页-->
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:screenOrientation="portrait" />
+        <!--音乐播放详情页-->
+        <activity
+            android:name=".ui.player.MusicPlayerActivity"
+            android:screenOrientation="portrait" />
+
+        <service android:name=".service.MusicService" />
     </application>
+
 
 </manifest>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray"
+    android:orientation="vertical">
+
+    <include layout="@layout/layout_music_title_bar" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/music_player_bottom_height">
+
+            <com.munin.library.view.widget.AspectImageView
+                android:layout_width="@dimen/music_player_cover_disc_size"
+                android:layout_height="@dimen/music_player_cover_disc_size"
+                android:layout_gravity="center"
+                android:background="@drawable/drawable_music_disc_bg" />
+
+            <com.munin.library.view.widget.NoHaloViewPager
+                android:id="@+id/music_player_view_pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/music_stylus_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:src="@drawable/music_stylus" />
+
+        </FrameLayout>
+
+        <include
+            layout="@layout/layout_music_player_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/music_player_bottom_height"
+            android:layout_gravity="bottom" />
+    </FrameLayout>
+
+</LinearLayout>

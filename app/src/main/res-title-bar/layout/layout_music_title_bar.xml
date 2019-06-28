@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/title_bar_height"
+    android:orientation="horizontal">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/music_title_back"
+        android:layout_width="@dimen/title_bar_back_width"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:src="@drawable/title_back"
+        android:layout_marginLeft="10dp"
+        />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/music_title_title"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3"
+            android:text="111111"
+            android:textColor="@color/black"
+            android:textSize="@dimen/title_bat_title_size" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/music_title_author"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:text="111111"
+            android:textColor="@color/black" />
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/music_title_share"
+        android:layout_width="@dimen/title_bar_back_width"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/title_share" />
+</LinearLayout>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.munin.library.view.widget.AspectImageView
+        android:layout_width="@dimen/music_player_cover_disc_size"
+        android:layout_height="@dimen/music_player_cover_disc_size"
+        android:layout_gravity="center"
+        android:background="@drawable/drawable_music_disc" />
+
+    <com.munin.library.view.widget.AspectImageView
+        android:layout_width="@dimen/music_player_cover_cover_size"
+        android:layout_height="@dimen/music_player_cover_cover_size"
+        android:background="@drawable/music_play"
+        android:id="@+id/music_cover_disc"
+        android:layout_gravity="center" />
+</FrameLayout>

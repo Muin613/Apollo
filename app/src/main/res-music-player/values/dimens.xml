@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="music_player_bottom_height">135dp</dimen>
+    <dimen name="music_player_music_control_width">60dp</dimen>
+    <dimen name="music_player_music_mid_control_width">70dp</dimen>
+    <dimen name="music_player_music_control_margin">10dp</dimen>
+    <dimen name="music_player_txt_size">10sp</dimen>
+    <dimen name="music_player_time_txt_width">40dp</dimen>
+    <dimen name="music_player_music_seek_control_margin">1dp</dimen>
+    <dimen name="music_player_seek_height">30dp</dimen>
+    <dimen name="music_player_cover_disc_size">200dp</dimen>
+    <dimen name="music_player_cover_cover_size">160dp</dimen>
+</resources>

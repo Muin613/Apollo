@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply from: "${rootProject.rootDir}/package-upload.gradle"
 
 android {
     compileSdkVersion 28
@@ -16,13 +17,37 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+            res.srcDirs += [
+                    'src/main/res-main',
+                    'src/main/res-music-player',
+                    'src/main/res-title-bar',
+                    'src/main/res-vlog',
+                    'src/main/res-ad',
+                    'src/main/res-flash'
+            ]
+        }
+    }
+    flavorDimensions 'ENV'
+    productFlavors {
+        env {
+            dimension = 'ENV'
+            buildConfigField("String", "HOST", "\"${rootProject.ext.host}\"")
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
-
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    testImplementation 'junit:junit:4.12'
+    implementation fileTree(dir: 'libs', include: ['*.jar',"*.aar"])
+    implementation 'androidx.appcompat:appcompat:1.1.0-beta01'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta1'
+    testImplementation 'junit:junit:4.13-beta-3'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    api project(':library')
 }

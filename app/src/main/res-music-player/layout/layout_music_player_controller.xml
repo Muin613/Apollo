@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/music_player_music_mid_control_width"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/music_control_back"
+        android:layout_width="@dimen/music_player_music_control_width"
+        android:layout_height="@dimen/music_player_music_control_width"
+        android:layout_marginEnd="@dimen/music_player_music_control_margin"
+        android:layout_marginRight="@dimen/music_player_music_control_margin"
+        android:src="@drawable/music_last" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/music_control_play_or_pause"
+        android:layout_width="@dimen/music_player_music_mid_control_width"
+        android:layout_height="@dimen/music_player_music_mid_control_width"
+        android:src="@drawable/music_play" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/music_control_forward"
+        android:layout_width="@dimen/music_player_music_control_width"
+        android:layout_height="@dimen/music_player_music_control_width"
+        android:layout_marginStart="@dimen/music_player_music_control_margin"
+        android:layout_marginLeft="@dimen/music_player_music_control_margin"
+        android:src="@drawable/music_next" />
+
+</LinearLayout>
