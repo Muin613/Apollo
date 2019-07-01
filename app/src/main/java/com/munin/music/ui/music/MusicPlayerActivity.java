@@ -126,7 +126,6 @@ public class MusicPlayerActivity extends BaseActivity implements ViewPager.OnPag
             public void onEnd() {
             }
         });
-        mViewPager.setCurrentItem(3);
     }
 
     private int lastPos = -1;

@@ -10,7 +10,7 @@
     <dimen name="music_player_seek_height">30dp</dimen>
     <dimen name="music_player_cover_disc_size">200dp</dimen>
     <dimen name="music_player_cover_cover_size">160dp</dimen>
-    <dimen name="music_tiny_controller_height">40dp</dimen>
+    <dimen name="music_tiny_controller_height">50dp</dimen>
     <dimen name="music_tiny_controller_margin">5dp</dimen>
     <dimen name="music_tiny_controller_name_size">10sp</dimen>
     <dimen name="music_tiny_controller_author_size">7sp</dimen>
