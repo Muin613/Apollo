@@ -1,12 +1,10 @@
-package com.munin.music.ui.player;
+package com.munin.music.ui.music;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.KeyEvent;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.viewpager.widget.ViewPager;
 
@@ -19,12 +17,12 @@ import com.munin.music.media.music.MusicStatus;
 import com.munin.music.model.music.MusicModel;
 import com.munin.music.share.ShareTextController;
 import com.munin.music.ui.BaseActivity;
-import com.munin.music.ui.player.adapter.MusicItemChangeViewAdapter;
-import com.munin.music.ui.player.controller.MusicDiscController;
-import com.munin.music.ui.player.controller.MusicPlayPanelController;
-import com.munin.music.ui.player.controller.MusicStylusController;
-import com.munin.music.ui.player.controller.MusicTitleController;
-import com.munin.music.ui.player.view.MusicItemView;
+import com.munin.music.ui.music.adapter.MusicItemChangeViewAdapter;
+import com.munin.music.ui.music.controller.MusicDiscController;
+import com.munin.music.ui.music.controller.MusicPlayPanelController;
+import com.munin.music.ui.music.controller.MusicStylusController;
+import com.munin.music.ui.music.controller.MusicTitleController;
+import com.munin.music.ui.music.view.MusicItemView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +40,7 @@ public class MusicPlayerActivity extends BaseActivity implements ViewPager.OnPag
     private MusicTitleController mTitleController = new MusicTitleController();
     private MusicDiscController mDiscController = new MusicDiscController();
     private ShareTextController mShareTextController = new ShareTextController(this);
-    private AppCompatImageView mShareImageView;
+    private AppCompatImageView mShareImageView, mBackImageView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +65,7 @@ public class MusicPlayerActivity extends BaseActivity implements ViewPager.OnPag
             }
         };
         mShareImageView = findViewById(R.id.music_title_share);
+        mBackImageView = findViewById(R.id.music_title_back);
         mController.mMusicBackView = findViewById(R.id.music_control_back);
         mController.mMusicPlayPauseView = findViewById(R.id.music_control_play_or_pause);
         mController.mMusicForwardView = findViewById(R.id.music_control_forward);
@@ -101,6 +100,9 @@ public class MusicPlayerActivity extends BaseActivity implements ViewPager.OnPag
         ViewUtils.setViewClickListener(mShareImageView, v -> {
             mShareTextController.share();
         });
+        ViewUtils.setViewClickListener(mBackImageView, v -> {
+            finish();
+        });
     }
 
 
@@ -124,6 +126,7 @@ public class MusicPlayerActivity extends BaseActivity implements ViewPager.OnPag
             public void onEnd() {
             }
         });
+        mViewPager.setCurrentItem(3);
     }
 
     private int lastPos = -1;

@@ -1,4 +1,4 @@
-package com.munin.music.ui.player.controller;
+package com.munin.music.ui.music.controller;
 
 import android.app.Activity;
 import android.content.Intent;

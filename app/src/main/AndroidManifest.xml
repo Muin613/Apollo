@@ -40,7 +40,7 @@
             android:screenOrientation="portrait" />
         <!--音乐播放详情页-->
         <activity
-            android:name=".ui.player.MusicPlayerActivity"
+            android:name=".ui.music.MusicPlayerActivity"
             android:screenOrientation="portrait" />
 
         <service android:name=".service.MusicService" />

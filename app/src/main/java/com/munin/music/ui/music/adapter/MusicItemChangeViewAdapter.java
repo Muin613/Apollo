@@ -1,4 +1,4 @@
-package com.munin.music.ui.player.adapter;
+package com.munin.music.ui.music.adapter;
 
 import android.content.Context;
 import android.view.View;
@@ -10,7 +10,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import com.munin.library.log.Logger;
 import com.munin.library.utils.ListUtils;
 import com.munin.music.data.MusicData;
-import com.munin.music.ui.player.view.MusicItemView;
+import com.munin.music.ui.music.view.MusicItemView;
 
 import java.util.ArrayList;
 import java.util.List;

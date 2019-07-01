@@ -9,7 +9,7 @@ import android.view.KeyEvent;
 import android.view.View;
 
 import com.munin.music.R;
-import com.munin.music.ui.player.MusicPlayerActivity;
+import com.munin.music.ui.music.MusicPlayerActivity;
 import com.munin.music.utils.MusicControlUtils;
 
 public class MainActivity extends AppCompatActivity {

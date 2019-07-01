@@ -1,4 +1,4 @@
-package com.munin.music.ui.player.controller;
+package com.munin.music.ui.music.controller;
 import android.animation.ObjectAnimator;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;

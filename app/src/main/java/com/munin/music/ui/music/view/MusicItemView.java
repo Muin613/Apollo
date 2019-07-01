@@ -1,14 +1,12 @@
-package com.munin.music.ui.player.view;
+package com.munin.music.ui.music.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.munin.library.utils.ViewUtils;
 import com.munin.library.view.widget.AspectImageView;
 import com.munin.music.R;
 import com.munin.music.data.MusicData;

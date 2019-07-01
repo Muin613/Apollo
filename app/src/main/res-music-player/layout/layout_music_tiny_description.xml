@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/music_tiny_item_height"
+    android:orientation="horizontal">
+
+    <com.munin.library.view.widget.AspectImageView
+        android:id="@+id/music_tiny_music_iv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginRight="@dimen/music_tiny_controller_margin"
+        android:background="@color/red" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/music_tiny_title_tv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center|start"
+            android:textColor="@color/white"
+            android:textSize="@dimen/music_tiny_controller_name_size" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/music_tiny_content_tv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center|start"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/music_tiny_controller_author_size" />
+    </LinearLayout>
+</LinearLayout>

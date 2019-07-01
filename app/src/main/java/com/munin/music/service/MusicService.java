@@ -21,7 +21,7 @@ import com.munin.music.media.music.MusicQuery;
 import com.munin.music.media.music.MusicStatus;
 import com.munin.library.media.audio.NativeMusicMediaPlayer;
 import com.munin.music.model.music.MusicModel;
-import com.munin.music.ui.player.MusicPlayerActivity;
+import com.munin.music.ui.music.MusicPlayerActivity;
 import com.munin.music.utils.MusicControlUtils;
 
 

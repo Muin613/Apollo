@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--自定义圆弧view-->
+
+    <declare-styleable name="ProgressView">
+        <attr name="progress_color" format="color"></attr>
+        <attr name="progress_second_color" format="color"></attr>
+        <attr name="progress_width" format="integer"></attr>
+    </declare-styleable>
+
+</resources>
