@@ -35,3 +35,5 @@ gen/
 .idea/vcs.xml
 /*/build/
 /captures
+# Mac OS
+.DS_Store
