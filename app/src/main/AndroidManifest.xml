@@ -16,7 +16,7 @@
         android:roundIcon="@mipmap/apollo_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".ui.ApolloLauncherActivity">
+        <activity android:name=".ui.music.MusicTestActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />

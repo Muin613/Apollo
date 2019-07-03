@@ -5,5 +5,17 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <include layout="@layout/layout_music_tiny_controller" />
+    <com.munin.library.view.widget.refreshlayout.XRefreshLayout
+        android:layout_width="match_parent"
+        android:id="@+id/x"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:text="1111111"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/gray" />
+    </com.munin.library.view.widget.refreshlayout.XRefreshLayout>
 </LinearLayout>
