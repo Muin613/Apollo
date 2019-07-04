@@ -20,7 +20,14 @@ public class RefreshLayoutManger extends LayoutManager {
         lp.height = 200;
         header.setLayoutParams(lp);
         setHeader(header);
-        setFooter(null);
+        LoadFooter footer = new LoadFooter(mContext);
+        lp = footer.getLayoutParams();
+        if (lp == null) {
+            lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 200);
+        }
+        lp.height = 200;
+        footer.setLayoutParams(lp);
+        setFooter(footer);
     }
 
 
@@ -31,6 +38,6 @@ public class RefreshLayoutManger extends LayoutManager {
 
     @Override
     public int getLoadReboundDuration() {
-        return 500;
+        return 1000;
     }
 }

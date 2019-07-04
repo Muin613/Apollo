@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.Looper;
 import android.os.MessageQueue;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -26,16 +27,18 @@ import com.munin.library.view.widget.refreshlayout.interfaces.IRefreshContent;
 import com.munin.library.view.widget.refreshlayout.interfaces.IRefreshFooter;
 import com.munin.library.view.widget.refreshlayout.interfaces.IRefreshHeader;
 import com.munin.library.view.widget.refreshlayout.interfaces.IRefreshLoadLayoutManager;
+import com.munin.library.view.widget.refreshlayout.interfaces.OnRefreshLoadMoreListener;
 import com.munin.library.view.widget.refreshlayout.interfaces.RefreshLayout;
 import com.munin.library.view.widget.refreshlayout.state.RefreshState;
 
+/**
+ * @author M
+ */
 public class XRefreshLayout extends FrameLayout implements RefreshLayout, NestedScrollingParent, NestedScrollingChild {
     private static final String TAG = "XRefreshLayout";
     IRefreshLoadLayoutManager mManager;
-    protected Scroller mScroller;
     protected VelocityTracker mVelocityTracker;
     private int mMaximumFlingVelocity = ViewConfiguration.getMaximumFlingVelocity();
-    private int mMinimumFlingVelocity = ViewConfiguration.getMinimumFlingVelocity();
     protected Interpolator mReboundInterpolator;
     protected NestedScrollingChildHelper mNestedChild = new NestedScrollingChildHelper(this);
     protected NestedScrollingParentHelper mNestedParent = new NestedScrollingParentHelper(this);
@@ -48,6 +51,9 @@ public class XRefreshLayout extends FrameLayout implements RefreshLayout, Nested
     private float mChangeY = 0;
     private RefreshState mCurrentState = RefreshState.NONE, mLastState = RefreshState.NONE;
     protected ValueAnimator mReboundAnimator;
+    protected ValueAnimator mLoadReboundAnimator;
+    private OnRefreshLoadMoreListener mListener;
+    private float mTempValue = 0;
 
     public XRefreshLayout(Context context) {
         this(context, null);
@@ -97,22 +103,38 @@ public class XRefreshLayout extends FrameLayout implements RefreshLayout, Nested
     }
 
     private void initViewTranslationY() {
-        if (mHeader == null) {
-            return;
-        }
         Looper.myQueue().addIdleHandler(new MessageQueue.IdleHandler() {
             @Override
             public boolean queueIdle() {
-                Logger.i(TAG, "addHeader: view height = " + mHeader.getViewHeight());
-                mHeaderHeight = mHeader.getViewHeight();
                 mViewInit = true;
-                mHeader.getView().setTranslationY(-mHeader.getViewHeight());
+                if (mHeader != null) {
+                    mHeaderHeight = mHeader.getViewHeight();
+                    Logger.i(TAG, "initViewTranslationY: view height = " + mHeader.getViewHeight());
+                    mHeader.getView().setTranslationY(-mHeaderHeight);
+                }
+                if (mFooter != null) {
+                    mFooterHeight = mFooter.getViewHeight();
+                    Logger.i(TAG, "initViewTranslationY:  footer height = " + mFooter.getViewHeight());
+                    mFooter.getView().setTranslationY(mFooterHeight);
+                }
                 return false;
             }
         });
     }
 
     private void addFooter() {
+        if (mFooter != null) {
+            return;
+        }
+        mFooter = getFooter();
+        if (mFooter == null) {
+            return;
+        }
+        View view = mFooter.getView();
+        addView(view);
+        FrameLayout.LayoutParams lp = (LayoutParams) view.getLayoutParams();
+        lp.gravity = Gravity.BOTTOM;
+
     }
 
     @Override
@@ -208,34 +230,92 @@ public class XRefreshLayout extends FrameLayout implements RefreshLayout, Nested
         float tempY = currentY - mMoveY;
         mMoveY = currentY;
         if (mCurrentState == RefreshState.NONE) {
-            if (tempY > 0) {
+            if (mChangeY > 0) {
                 notifyStateChange(RefreshState.PULL_DOWN_TO_REFRESH);
+                notifyHeaderChange();
+            } else {
+                notifyStateChange(RefreshState.PULL_UP_TO_LOAD);
+                notifyFooterChange();
+            }
+        } else if (mCurrentState == RefreshState.PULL_UP_TO_LOAD) {
+            if (mChangeY > 0) {
+                adjustNormal();
+                notifyStateChange(RefreshState.PULL_DOWN_TO_REFRESH);
+                notifyHeaderChange();
+            }
+        } else if (mCurrentState == RefreshState.PULL_DOWN_TO_REFRESH) {
+            if (mChangeY < 0) {
+                adjustNormal();
+                notifyStateChange(RefreshState.PULL_UP_TO_LOAD);
+                notifyFooterChange();
             }
         }
-        if (mCurrentState == RefreshState.PULL_DOWN_TO_REFRESH) {
-            if (mHeader != null) {
-                mChangeY = mChangeY + tempY;
-                float translationY = 0;
-                if (mChangeY < mHeaderHeight * mHeader.getPullMaxRate()) {
-                    translationY = mChangeY - mHeaderHeight;
-                } else {
-                    mChangeY = mHeaderHeight * mHeader.getPullMaxRate();
-                    translationY = mChangeY - mHeaderHeight;
-                }
-                mRefreshContent.move(mChangeY);
-                if (translationY <= 0) {
-                    mHeader.getView().setTranslationY(translationY);
-                } else {
-                    mHeader.getView().setTranslationY((mChangeY - mHeaderHeight) / 2);
-                }
-                float percent = (mHeaderHeight + translationY) / mHeaderHeight;
-                mHeader.onMoving(false, percent, (int) translationY, mHeaderHeight, (int) (mHeaderHeight * mHeader.getPullMaxRate()));
+        mChangeY = mChangeY + tempY;
+        if (mChangeY >= 0 && mHeader != null) {
+            float translationY = 0;
+            if (mChangeY < mHeaderHeight * mHeader.getPullMaxRate()) {
+                translationY = mChangeY - mHeaderHeight;
+            } else {
+                mChangeY = mHeaderHeight * mHeader.getPullMaxRate();
+                translationY = mChangeY - mHeaderHeight;
             }
+            mRefreshContent.move(mChangeY);
+            if (translationY <= 0) {
+                mHeader.getView().setTranslationY(translationY);
+            } else {
+                mHeader.getView().setTranslationY((mChangeY - mHeaderHeight) / 2);
+            }
+            float percent = (mHeaderHeight + translationY) / mHeaderHeight;
+            mHeader.onMoving(false, percent, (int) translationY, mHeaderHeight, (int) (mHeaderHeight * mHeader.getPullMaxRate()));
+            //速度追踪
+            mVelocityTracker.addMovement(e);
+            return true;
+        }
+        if (mChangeY < 0 && mFooter != null) {
+            float translationY = 0;
+            if (Math.abs(mChangeY) < mFooterHeight * mFooter.getPullMaxRate()) {
+                translationY = mChangeY + mFooterHeight;
+            } else {
+                mChangeY = -mFooterHeight * mFooter.getPullMaxRate();
+                translationY = mChangeY + mFooterHeight;
+            }
+            mRefreshContent.move(mChangeY);
+            if (translationY >= 0) {
+                mFooter.getView().setTranslationY(translationY);
+            } else {
+                mFooter.getView().setTranslationY((mChangeY + mFooterHeight) / 2);
+            }
+            float percent = (-mFooterHeight + translationY) / mFooterHeight;
+            mFooter.onMoving(false, percent, (int) translationY, mFooterHeight, (int) (mFooterHeight * mFooter.getPullMaxRate()));
             //速度追踪
             mVelocityTracker.addMovement(e);
             return true;
         }
         return false;
+    }
+
+    private void adjustNormal() {
+        if (mHeader != null) {
+            mHeader.getView().setTranslationY(-mHeaderHeight);
+        }
+        mRefreshContent.move(0);
+        if (mFooter != null) {
+            mFooter.getView().setTranslationY(mFooterHeight);
+        }
+    }
+
+    private void notifyHeaderChange() {
+        if (mHeader == null) {
+            return;
+        }
+        mHeader.onStateChanged(this, mLastState, mCurrentState);
+    }
+
+    private void notifyFooterChange() {
+        if (mFooter == null) {
+            return;
+        }
+        mFooter.onStateChanged(this, mLastState, mCurrentState);
     }
 
     boolean handleUp(MotionEvent e) {
@@ -244,22 +324,32 @@ public class XRefreshLayout extends FrameLayout implements RefreshLayout, Nested
             mVelocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
             if (mHeader != null && (mHeader.getView().getTranslationY() + mHeaderHeight) >= mHeaderHeight * mHeader.getTriggerPullRate()) {
                 notifyStateChange(RefreshState.REFRESHING);
-                animSpinner(0, 1000, mReboundInterpolator);
+                notifyHeaderChange();
+                if (mListener != null) {
+                    mListener.onRefresh(this);
+                }
                 return true;
             } else {
                 notifyStateChange(RefreshState.PULL_DOWN_CANCEL);
-                animSpinner(0, 0, mReboundInterpolator);
+                notifyHeaderChange();
+                finishRefreshAnim(0, 0, mReboundInterpolator);
                 return true;
             }
         }
         if (mCurrentState == RefreshState.PULL_UP_TO_LOAD) {
             mVelocityTracker.addMovement(e);
             mVelocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
-            if (mFooter != null && (mFooter.getView().getTranslationY() + mFooterHeight) >= mFooterHeight * mFooter.getTriggerPullRate()) {
+            if (mFooter != null && (Math.abs(mFooter.getView().getTranslationY() - mFooterHeight)) >= mFooterHeight * mFooter.getTriggerPullRate()) {
                 notifyStateChange(RefreshState.LOADING);
+                notifyFooterChange();
+                if (mListener != null) {
+                    mListener.onLoadMore(this);
+                }
                 return true;
             } else {
                 notifyStateChange(RefreshState.PULL_UP_CANCEL);
+                notifyFooterChange();
+                finishLoadAnim(0, 0, mReboundInterpolator);
                 return true;
             }
         }
@@ -267,9 +357,16 @@ public class XRefreshLayout extends FrameLayout implements RefreshLayout, Nested
     }
 
     private void notifyStateChange(RefreshState state) {
+        if (mCurrentState == state) {
+            return;
+        }
         mLastState = mCurrentState;
         mCurrentState = state;
         Logger.i(TAG, "notifyStateChange: mCurrentState = " + mCurrentState);
+    }
+
+    public void setListener(OnRefreshLoadMoreListener listener) {
+        this.mListener = listener;
     }
 
     @Override
@@ -285,11 +382,7 @@ public class XRefreshLayout extends FrameLayout implements RefreshLayout, Nested
     }
 
 
-    private boolean canTouchWhenRefreshOrLoad() {
-        return mManager != null && mManager.canTouchWhenRefreshOrLoad();
-    }
-
-    private int getLoadReboundDuation() {
+    private int getLoadReboundDuration() {
         return mManager != null ? mManager.getLoadReboundDuration() : 500;
     }
 
@@ -310,20 +403,33 @@ public class XRefreshLayout extends FrameLayout implements RefreshLayout, Nested
     /**
      * 执行回弹动画
      */
-    protected ValueAnimator animSpinner(float endSpinner, long startDelay, Interpolator interpolator) {
-        if (mChangeY != endSpinner) {
-            if (mReboundAnimator != null) {
-                mReboundAnimator.cancel();
-            }
-            mReboundAnimator = ValueAnimator.ofFloat(endSpinner, mChangeY);
-            mReboundAnimator.setDuration(getRefreshReboundDuration());
-            mReboundAnimator.setInterpolator(interpolator);
-            mReboundAnimator.addUpdateListener(reboundUpdateListener);
-            mReboundAnimator.addListener(mAnimatorListener);
-            mReboundAnimator.setStartDelay(startDelay);
-            mReboundAnimator.start();
+    public   void finishRefreshAnim(float endSpinner, long startDelay, Interpolator interpolator) {
+        if (mReboundAnimator != null) {
+            mReboundAnimator.cancel();
         }
-        return mReboundAnimator;
+        mTempValue = mChangeY;
+        mReboundAnimator = ValueAnimator.ofFloat(endSpinner, mChangeY);
+        mReboundAnimator.setDuration(getRefreshReboundDuration());
+        mReboundAnimator.setInterpolator(interpolator);
+        mReboundAnimator.addUpdateListener(reboundUpdateListener);
+        mReboundAnimator.addListener(mAnimatorListener);
+        mReboundAnimator.setStartDelay(startDelay);
+        mReboundAnimator.start();
+
+    }
+
+    public void finishLoadAnim(float endSpinner, long startDelay, Interpolator interpolator) {
+        if (mLoadReboundAnimator != null) {
+            mLoadReboundAnimator.cancel();
+        }
+        mTempValue = mChangeY;
+        mLoadReboundAnimator = ValueAnimator.ofFloat(endSpinner, mChangeY);
+        mLoadReboundAnimator.setDuration(getLoadReboundDuration());
+        mLoadReboundAnimator.setInterpolator(interpolator);
+        mLoadReboundAnimator.addUpdateListener(mLoadReboundUpdateListener);
+        mLoadReboundAnimator.addListener(mAnimatorListener);
+        mLoadReboundAnimator.setStartDelay(startDelay);
+        mLoadReboundAnimator.start();
     }
 
     protected Animator.AnimatorListener mAnimatorListener = new AnimatorListenerAdapter() {
@@ -331,26 +437,89 @@ public class XRefreshLayout extends FrameLayout implements RefreshLayout, Nested
         public void onAnimationEnd(Animator animation) {
             mReboundAnimator = null;
             mChangeY = 0;
+            mTempValue = 0;
             notifyStateChange(RefreshState.NONE);
+        }
+    };
+    private ValueAnimator.AnimatorUpdateListener mLoadReboundUpdateListener = new ValueAnimator.AnimatorUpdateListener() {
+        @Override
+        public void onAnimationUpdate(ValueAnimator animation) {
+            finishLoad((float) animation.getAnimatedValue());
         }
     };
 
     protected ValueAnimator.AnimatorUpdateListener reboundUpdateListener = new ValueAnimator.AnimatorUpdateListener() {
         @Override
         public void onAnimationUpdate(ValueAnimator animation) {
-            moveSpinner((float) animation.getAnimatedValue());
+            finishRefresh((float) animation.getAnimatedValue());
         }
     };
 
-    private void moveSpinner(float moveY) {
-        float changeY = mChangeY - moveY;
+    private void finishRefresh(float moveY) {
+        if (mHeader == null) {
+            return;
+        }
+        float changeY = mTempValue - moveY;
         float percent = changeY / mHeaderHeight;
+        mChangeY = changeY;
         mRefreshContent.move(changeY);
         if (changeY - mHeaderHeight <= 0) {
             mHeader.getView().setTranslationY(changeY - mHeaderHeight);
         } else {
             mHeader.getView().setTranslationY((changeY - mHeaderHeight) / 2);
         }
-        mHeader.onReleased(this, percent, mHeaderHeight, (int) (mHeaderHeight * getHeader().getPullMaxRate()));
+        mHeader.onReleased(this, percent, mHeaderHeight, (int) (mHeaderHeight * mHeader.getPullMaxRate()));
+    }
+
+    private void finishLoad(float moveY) {
+        if (mFooter == null) {
+            return;
+        }
+        float changeY = mTempValue - moveY;
+        float percent = changeY / mFooterHeight;
+        mChangeY = changeY;
+        mRefreshContent.move(changeY);
+        if (changeY + mFooterHeight >= 0) {
+            mFooter.getView().setTranslationY(changeY + mFooterHeight);
+        } else {
+            mFooter.getView().setTranslationY((changeY + mFooterHeight) / 2);
+        }
+        mFooter.onReleased(this, percent, mFooterHeight, (int) (mFooterHeight * mFooter.getPullMaxRate()));
+    }
+
+    public void finishRefresh() {
+        if (mReboundAnimator != null) {
+            mReboundAnimator.cancel();
+        }
+        notifyStateChange(RefreshState.REFRESH_FINISHED);
+        notifyHeaderChange();
+        if (mCurrentState == RefreshState.REFRESHING || mCurrentState == RefreshState.REFRESH_FINISHED) {
+            mTempValue = mChangeY;
+            mReboundAnimator = ValueAnimator.ofFloat(0, mChangeY);
+            mReboundAnimator.setDuration(0);
+            mReboundAnimator.setInterpolator(mReboundInterpolator);
+            mReboundAnimator.addUpdateListener(reboundUpdateListener);
+            mReboundAnimator.addListener(mAnimatorListener);
+            mReboundAnimator.setStartDelay(0);
+            mReboundAnimator.start();
+        }
+    }
+
+    public void finishLoad() {
+        if (mLoadReboundAnimator != null) {
+            mLoadReboundAnimator.cancel();
+        }
+        notifyStateChange(RefreshState.LOAD_FINISHED);
+        notifyFooterChange();
+        if (mCurrentState == RefreshState.LOADING || mCurrentState == RefreshState.LOAD_FINISHED) {
+            mTempValue = mChangeY;
+            mLoadReboundAnimator = ValueAnimator.ofFloat(0, mChangeY);
+            mLoadReboundAnimator.setDuration(0);
+            mLoadReboundAnimator.setInterpolator(mReboundInterpolator);
+            mLoadReboundAnimator.addUpdateListener(mLoadReboundUpdateListener);
+            mLoadReboundAnimator.addListener(mAnimatorListener);
+            mLoadReboundAnimator.setStartDelay(0);
+            mLoadReboundAnimator.start();
+        }
     }
 }

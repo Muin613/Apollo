@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
+import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -12,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.munin.library.log.Logger;
-import com.munin.library.view.widget.refreshlayout.interfaces.IRefreshHeader;
+import com.munin.library.view.widget.refreshlayout.interfaces.IRefreshFooter;
 import com.munin.library.view.widget.refreshlayout.interfaces.RefreshLayout;
 import com.munin.library.view.widget.refreshlayout.state.RefreshState;
 import com.munin.music.R;
@@ -20,20 +21,20 @@ import com.munin.music.R;
 /**
  * @author M
  */
-public class RefreshHeader extends FrameLayout implements IRefreshHeader {
-    private static final String TAG = "RefreshHeader";
+public class LoadFooter extends FrameLayout implements IRefreshFooter {
+    private static final String TAG = "LoadFooter";
 
-    public RefreshHeader(@NonNull Context context) {
+    public LoadFooter(@NonNull Context context) {
         this(context, null);
     }
 
-    public RefreshHeader(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public LoadFooter(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setBackgroundResource(R.color.black);
         TextView view = new TextView(context);
-        view.setTextColor(Color.BLUE);
-        view.setGravity(Gravity.BOTTOM | Gravity.CENTER);
-        view.setText("TOU   BU");
+        view.setTextColor(Color.GRAY);
+        view.setGravity(Gravity.TOP | Gravity.CENTER);
+        view.setText("DI   BU");
         addView(view);
     }
 
@@ -43,11 +44,12 @@ public class RefreshHeader extends FrameLayout implements IRefreshHeader {
         return this;
     }
 
+
     @Override
     public void onMoving(boolean isDragging, float percent, float offset, int height, int maxDragHeight) {
-        if (percent > 1.001) {
-            setScaleX(percent);
-            setScaleY(percent);
+        if (percent < -1.001) {
+            setScaleX(Math.abs(percent));
+            setScaleY(Math.abs(percent));
         } else {
             setScaleY(1);
             setScaleX(1);
@@ -55,12 +57,13 @@ public class RefreshHeader extends FrameLayout implements IRefreshHeader {
         Logger.i(TAG, "onMoving: isDragging = " + isDragging + " percent = " + percent + " offset = " + offset + " height = " + height + " maxDragHeight = " + maxDragHeight);
     }
 
+
     @Override
     public void onReleased(@NonNull RefreshLayout refreshLayout, float percent, int height, int maxDragHeight) {
         Logger.i(TAG, "onReleased: height = " + height + " percent = " + percent + " maxDragHeight = " + maxDragHeight);
-        if (percent > 1.001) {
-            setScaleX(percent);
-            setScaleY(percent);
+        if (percent < -1.001) {
+            setScaleX(Math.abs(percent));
+            setScaleY(Math.abs(percent));
         } else {
             setScaleY(1);
             setScaleX(1);
@@ -85,5 +88,11 @@ public class RefreshHeader extends FrameLayout implements IRefreshHeader {
     @Override
     public void onStateChanged(@NonNull RefreshLayout refreshLayout, @NonNull RefreshState oldState, @NonNull RefreshState newState) {
         Logger.i(TAG, "onStateChanged: oldState = " + oldState + " newState = " + newState);
+    }
+
+    @Override
+    public void setScaleX(float scaleX) {
+        super.setScaleX(scaleX);
+        Logger.i(TAG, "setScaleX " + scaleX);
     }
 }

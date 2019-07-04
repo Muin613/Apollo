@@ -19,6 +19,4 @@ public interface IRefreshLoadLayoutManager {
 
     int getLoadReboundDuration();
 
-    boolean canTouchWhenRefreshOrLoad();
-
 }

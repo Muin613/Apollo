@@ -16,10 +16,6 @@ public abstract class LayoutManager implements IRefreshLoadLayoutManager {
         this.mContext = context;
     }
 
-    @Override
-    public boolean canTouchWhenRefreshOrLoad() {
-        return false;
-    }
 
     @Override
     public IRefreshFooter getFooter() {
