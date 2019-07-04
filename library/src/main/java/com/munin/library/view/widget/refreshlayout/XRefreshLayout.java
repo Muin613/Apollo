@@ -125,8 +125,9 @@ public class XRefreshLayout extends FrameLayout implements RefreshLayout, Nested
         super.onLayout(changed, left, top, right, bottom);
     }
 
-    private float mMoveY = -1;
+    private float mMoveY = 0;
     private int mAction = MotionEvent.ACTION_DOWN;
+    private boolean mForbidden = false;
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -146,6 +147,19 @@ public class XRefreshLayout extends FrameLayout implements RefreshLayout, Nested
             return true;
         }
 
+        final float touchY = getTouchY(ev);
+        if (ev.getPointerCount() >= 2) {
+            if (!mForbidden) {
+                mMoveY = touchY;
+            }
+            mForbidden = true;
+        } else {
+            if (mForbidden) {
+                //重多点触控退出时，重置移动位置
+                mMoveY = ev.getY();
+            }
+            mForbidden = false;
+        }
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 if (mCurrentState == RefreshState.NONE) {
@@ -160,6 +174,7 @@ public class XRefreshLayout extends FrameLayout implements RefreshLayout, Nested
             case MotionEvent.ACTION_UP:
                 consume = handleUp(ev);
                 int velocity = (int) mVelocityTracker.getYVelocity();
+                mMoveY = -1;
                 break;
             case MotionEvent.ACTION_CANCEL:
                 mVelocityTracker.clear();//清空速度追踪器
@@ -170,8 +185,26 @@ public class XRefreshLayout extends FrameLayout implements RefreshLayout, Nested
         return consume || super.dispatchTouchEvent(ev);
     }
 
+    float getTouchY(MotionEvent event) {
+        final int actionMasked = event.getActionMasked();
+        final boolean pointerUp = actionMasked == MotionEvent.ACTION_POINTER_UP;
+
+        float sumY = 0;
+        final int count = event.getPointerCount();
+        for (int i = 0; i < count; i++) {
+            sumY += event.getY(i);
+        }
+        final int div = pointerUp ? count - 1 : count;
+        return sumY / div;
+    }
+
     boolean handleMove(MotionEvent e) {
-        float currentY = e.getY();
+        float currentY = 0;
+        if (mForbidden) {
+            currentY = getTouchY(e);
+        } else {
+            currentY = e.getY();
+        }
         float tempY = currentY - mMoveY;
         mMoveY = currentY;
         if (mCurrentState == RefreshState.NONE) {
@@ -182,15 +215,13 @@ public class XRefreshLayout extends FrameLayout implements RefreshLayout, Nested
         if (mCurrentState == RefreshState.PULL_DOWN_TO_REFRESH) {
             if (mHeader != null) {
                 mChangeY = mChangeY + tempY;
-                Logger.i(TAG,"move bian ?"+mChangeY);
-                float translationY =0;
+                float translationY = 0;
                 if (mChangeY < mHeaderHeight * mHeader.getPullMaxRate()) {
-                    translationY=mChangeY-mHeaderHeight;
+                    translationY = mChangeY - mHeaderHeight;
                 } else {
-                    mChangeY= mHeaderHeight * mHeader.getPullMaxRate();
-                    translationY=mChangeY-mHeaderHeight;
+                    mChangeY = mHeaderHeight * mHeader.getPullMaxRate();
+                    translationY = mChangeY - mHeaderHeight;
                 }
-                Logger.i(TAG,"move "+mChangeY);
                 mRefreshContent.move(mChangeY);
                 if (translationY <= 0) {
                     mHeader.getView().setTranslationY(translationY);
@@ -213,6 +244,7 @@ public class XRefreshLayout extends FrameLayout implements RefreshLayout, Nested
             mVelocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
             if (mHeader != null && (mHeader.getView().getTranslationY() + mHeaderHeight) >= mHeaderHeight * mHeader.getTriggerPullRate()) {
                 notifyStateChange(RefreshState.REFRESHING);
+                animSpinner(0, 1000, mReboundInterpolator);
                 return true;
             } else {
                 notifyStateChange(RefreshState.PULL_DOWN_CANCEL);
