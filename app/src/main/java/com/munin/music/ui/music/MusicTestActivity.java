@@ -1,11 +1,13 @@
 package com.munin.music.ui.music;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.munin.library.log.Logger;
 import com.munin.library.view.widget.refreshlayout.XRefreshLayout;
 import com.munin.library.view.widget.refreshlayout.interfaces.OnRefreshLoadMoreListener;
 import com.munin.library.view.widget.refreshlayout.interfaces.RefreshLayout;
@@ -45,6 +47,8 @@ public class MusicTestActivity extends AppCompatActivity {
         });
     }
 
+    public void click(View view) {
+    }
 
     @Override
     protected void onDestroy() {

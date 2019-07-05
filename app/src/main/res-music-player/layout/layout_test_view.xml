@@ -6,16 +6,83 @@
     android:orientation="vertical">
 
     <com.munin.library.view.widget.refreshlayout.XRefreshLayout
-        android:layout_width="match_parent"
         android:id="@+id/x"
+        android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:text="1111111"
-            android:textColor="@color/white"
-            android:textSize="30sp"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/gray" />
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:gravity="center"
+                    android:text="1"
+                    android:onClick="click"
+                    android:textColor="@color/gray"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:gravity="center"
+                    android:text="2"
+                    android:textColor="@color/gray"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:gravity="center"
+                    android:text="3"
+                    android:textColor="@color/gray"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:gravity="center"
+                    android:text="4"
+                    android:textColor="@color/gray"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:gravity="center"
+                    android:text="5"
+                    android:textColor="@color/gray"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:gravity="center"
+                    android:text="6"
+                    android:textColor="@color/gray"
+                    android:textSize="30sp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:gravity="center"
+                    android:text="7"
+                    android:textColor="@color/gray"
+                    android:textSize="30sp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:gravity="center"
+                    android:text="8"
+                    android:textColor="@color/gray"
+                    android:textSize="30sp" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
     </com.munin.library.view.widget.refreshlayout.XRefreshLayout>
 </LinearLayout>

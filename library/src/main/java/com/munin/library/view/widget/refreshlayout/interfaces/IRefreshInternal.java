@@ -26,4 +26,7 @@ public interface IRefreshInternal extends OnStateChangeListener {
 
     int getViewHeight();
 
+    boolean isShow();
+
+    void setIsShow(boolean isShow);
 }

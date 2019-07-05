@@ -12,7 +12,7 @@ public class RefreshLayoutManger extends LayoutManager {
 
     public RefreshLayoutManger(Context context) {
         super(context);
-        RefreshHeader header = new RefreshHeader(mContext);
+        RefreshHeaderView header = new RefreshHeaderView(mContext);
         ViewGroup.LayoutParams lp = header.getLayoutParams();
         if (lp == null) {
             lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 200);
@@ -20,7 +20,7 @@ public class RefreshLayoutManger extends LayoutManager {
         lp.height = 200;
         header.setLayoutParams(lp);
         setHeader(header);
-        LoadFooter footer = new LoadFooter(mContext);
+        LoadFooterView footer = new LoadFooterView(mContext);
         lp = footer.getLayoutParams();
         if (lp == null) {
             lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 200);
