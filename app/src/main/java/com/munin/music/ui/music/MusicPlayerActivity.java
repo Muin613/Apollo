@@ -81,7 +81,7 @@ public class MusicPlayerActivity extends BaseActivity implements ViewPager.OnPag
         mViewPager.addOnPageChangeListener(this);
         controller = new MusicStylusController(mImgView);
         ViewUtils.setViewClickListener(mController.mMusicBackView, v -> {
-            if(mViewPager.isCanScroll()){
+            if (mViewPager.isCanScroll()) {
                 return;
             }
             if (mViewPager.getCurrentItem() == 0) {
@@ -90,7 +90,7 @@ public class MusicPlayerActivity extends BaseActivity implements ViewPager.OnPag
             mViewPager.setCurrentItem(mViewPager.getCurrentItem() - 1);
         });
         ViewUtils.setViewClickListener(mController.mMusicForwardView, v -> {
-            if(mViewPager.isCanScroll()){
+            if (mViewPager.isCanScroll()) {
                 return;
             }
             if ((mViewPager.getCurrentItem() + 1) > mViewPagerAdapter.getCount()) {
