@@ -74,4 +74,8 @@ public class NoHaloViewPager extends ViewPager {
     public void setCanScroll(boolean canScroll) {
         mCanScroll = canScroll;
     }
+
+    public boolean isCanScroll() {
+        return mCanScroll;
+    }
 }
