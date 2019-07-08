@@ -68,9 +68,11 @@ public class XRefreshLayoutUtils {
         return childTop == parentTop;
     }
 
-    public static boolean canScrollVerticalOnRecyclerView(@NonNull View targetView, int direction) {
-
-        return false;
+    public static boolean canScrollVerticalOnRecyclerView(@NonNull RecyclerView targetView, int direction) {
+        if (direction > 0) {
+            return isRecyclerViewToTop(targetView);
+        }
+        return isRecyclerViewToBottom(targetView);
     }
 
     public static boolean isRecyclerViewToTop(@NonNull RecyclerView recyclerView) {
@@ -179,7 +181,7 @@ public class XRefreshLayoutUtils {
         if (targetView instanceof AbsListView) {
             return canScrollVerticalOnAbsListView(targetView, direction);
         } else if (targetView instanceof RecyclerView) {
-            return canScrollVerticalOnRecyclerView(targetView, direction);
+            return canScrollVerticalOnRecyclerView((RecyclerView) targetView, direction);
         } else if (targetView instanceof NestedScrollView || targetView instanceof ScrollView) {
             return canScrollVerticalOnScrollingView((ViewGroup) targetView, direction);
         } else {
