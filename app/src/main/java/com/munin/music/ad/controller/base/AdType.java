@@ -5,6 +5,9 @@ import androidx.annotation.StringDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * @author M
+ */
 @StringDef({AdType.IMG, AdType.GIF, AdType.VIDEO})
 @Retention(RetentionPolicy.SOURCE)
 public @interface AdType {
