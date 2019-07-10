@@ -36,6 +36,8 @@ public class NativeAudioRecorderHelper {
     public NativeAudioRecorderHelper(@NonNull String originalAudioPath, @NonNull String finalAudioPath) {
         this.mOriginalAudioPath = originalAudioPath;
         this.mFinalAudioPath = finalAudioPath;
+        mBufferSizeInBytes = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE, AUDIO_CHANNEL, AUDIO_ENCODING);
+        mAudioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL, AUDIO_ENCODING, mBufferSizeInBytes);
     }
 
     private Runnable mTask = new Runnable() {
@@ -53,11 +55,6 @@ public class NativeAudioRecorderHelper {
             mIsFinished = true;
         }
     };
-
-    public NativeAudioRecorderHelper() {
-        mBufferSizeInBytes = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE, AUDIO_CHANNEL, AUDIO_ENCODING);
-        mAudioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL, AUDIO_ENCODING, mBufferSizeInBytes);
-    }
 
     public void startRecord() {
         Logger.i(TAG, "startRecord");
