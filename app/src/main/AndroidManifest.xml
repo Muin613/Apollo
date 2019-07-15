@@ -10,6 +10,16 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!--录音功能-->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!--照相机功能-->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- 硬件加速对X5视频播放非常重要，建议开启 -->
+    <uses-permission android:name="android.permission.GET_TASKS" />
     <dist:module dist:instant="true" />
 
     <application
@@ -20,7 +30,7 @@
         android:roundIcon="@mipmap/apollo_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".ui.music.MusicTestActivity">
+        <activity android:name=".ui.vlog.RecorderActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -38,11 +48,7 @@
                     android:scheme="ad" />
             </intent-filter>
         </activity>
-        <!--主页-->
-        <activity
-            android:name=".ui.main.MainActivity"
-            android:screenOrientation="portrait" />
-        <!--音乐播放详情页-->
+
         <activity
             android:name=".ui.music.MusicPlayerActivity"
             android:screenOrientation="portrait" />
