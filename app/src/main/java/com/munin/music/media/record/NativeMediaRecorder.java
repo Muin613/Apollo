@@ -161,6 +161,7 @@ public class NativeMediaRecorder {
                     } else {
                         // prepare didn't work, release the camera
                         releaseMediaRecorder();
+                        mCamera.lock();
                         releaseCamera();
                         Logger.e(TAG, "error!!!!!!!");
                     }
