@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="video_player_bottom_height">135dp</dimen>
+    <dimen name="video_player_play_control_width">60dp</dimen>
+    <dimen name="video_player_music_mid_control_width">70dp</dimen>
+    <dimen name="video_player_music_control_margin">10dp</dimen>
+    <dimen name="video_player_txt_size">10sp</dimen>
+    <dimen name="video_player_time_txt_width">40dp</dimen>
+    <dimen name="video_player_seek_control_margin">1dp</dimen>
+    <dimen name="video_player_screen_control_margin">10dp</dimen>
+    <dimen name="video_player_seek_height">30dp</dimen>
+    <dimen name="video_screen_control_width">20dp</dimen>
+    <dimen name="video_title_txt_size">16sp</dimen>
+</resources>

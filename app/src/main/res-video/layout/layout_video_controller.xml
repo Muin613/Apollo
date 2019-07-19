@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/video_current_time"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/video_player_seek_height"
+        android:layout_marginStart="@dimen/video_player_screen_control_margin"
+        android:layout_marginLeft="@dimen/video_player_screen_control_margin"
+        android:gravity="center|end"
+        android:text="00:00"
+        android:textSize="@dimen/video_player_txt_size" />
+
+    <SeekBar
+        android:id="@+id/video_control_seek"
+        style="@style/video_seek_style"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/video_player_seek_height"
+        android:layout_weight="1"
+        android:max="100" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/video_total_time"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/video_player_seek_height"
+        android:gravity="center|start"
+        android:text="00:00"
+        android:textSize="@dimen/video_player_txt_size" />
+
+    <com.munin.library.view.widget.AspectImageView
+        android:id="@+id/video_screen_control"
+        android:layout_width="@dimen/video_screen_control_width"
+        android:layout_height="@dimen/video_screen_control_width"
+        android:layout_marginStart="@dimen/video_player_screen_control_margin"
+        android:layout_marginLeft="@dimen/video_player_screen_control_margin"
+        android:layout_marginEnd="@dimen/video_player_screen_control_margin"
+        android:layout_marginRight="@dimen/video_player_screen_control_margin"
+        android:background="@drawable/video_fullscreen" />
+</LinearLayout>

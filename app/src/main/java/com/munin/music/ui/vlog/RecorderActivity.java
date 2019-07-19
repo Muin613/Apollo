@@ -36,6 +36,12 @@ public class RecorderActivity extends BaseActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        mNativeMediaRecoder.preShow();
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         mNativeMediaRecoder.onPause();

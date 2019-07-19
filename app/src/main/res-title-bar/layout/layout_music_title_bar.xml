@@ -11,6 +11,7 @@
         android:padding="10dp"
         android:src="@drawable/title_back"
         android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
         />
 
     <LinearLayout
@@ -43,5 +44,6 @@
         android:layout_height="match_parent"
         android:padding="10dp"
         android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
         android:src="@drawable/title_share" />
 </LinearLayout>

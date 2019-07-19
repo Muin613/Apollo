@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/video_bg_color"
+    android:id="@+id/video_cover_view"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/video_cover_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="2"
+        android:text="11111"
+        android:textColor="@color/white"
+        android:textSize="@dimen/video_title_txt_size" />
+
+    <com.munin.library.view.widget.AspectImageView
+        android:layout_width="@dimen/video_player_play_control_width"
+        android:layout_height="@dimen/video_player_play_control_width"
+        android:layout_gravity="center"
+        android:id="@+id/video_play_control"
+        android:background="@drawable/video_pause" />
+
+    <include
+        layout="@layout/layout_video_controller"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/video_player_seek_height"
+        android:layout_gravity="bottom" />
+</FrameLayout>

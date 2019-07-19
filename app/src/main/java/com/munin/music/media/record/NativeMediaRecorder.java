@@ -26,44 +26,16 @@ public class NativeMediaRecorder {
     TextureView mTextureView;
     private File mOutputFile;
     private boolean mIsRecording = false;
+    private int mWidth, mHeight;
 
     public NativeMediaRecorder(@NonNull TextureView view) {
         mTextureView = view;
     }
 
     public boolean prepareVideoRecorder() {
-        // BEGIN_INCLUDE (configure_preview)
-        mCamera = RecordCameraUtils.getDefaultCameraInstance();
-
-        // We need to make sure that our preview and recording video size are supported by the
-        // camera. Query camera to find all the sizes and choose the optimal size given the
-        // dimensions of our preview surface.
-        Camera.Parameters parameters = mCamera.getParameters();
-        List<Camera.Size> mSupportedPreviewSizes = parameters.getSupportedPreviewSizes();
-        List<Camera.Size> mSupportedVideoSizes = parameters.getSupportedVideoSizes();
-        Camera.Size optimalSize = RecordCameraUtils.getOptimalVideoSize(mSupportedVideoSizes,
-                mSupportedPreviewSizes, mTextureView.getWidth(), mTextureView.getHeight());
-
-        // Use the same size for recording profile.
         CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
-        profile.videoFrameWidth = optimalSize.height;
-        profile.videoFrameHeight = optimalSize.width;
-
-        // likewise for the camera object itself.
-        parameters.setPreviewSize(profile.videoFrameWidth, profile.videoFrameHeight);
-        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-        mCamera.setParameters(parameters);
-        mCamera.setDisplayOrientation(90);
-        try {
-            // Requires API level 11+, For backward compatibility use {@link setPreviewDisplay}
-            // with {@link SurfaceView}
-            mCamera.setPreviewTexture(mTextureView.getSurfaceTexture());
-        } catch (IOException e) {
-            Logger.e(TAG, "Surface texture is unavailable or unsuitable" + e.getMessage());
-            return false;
-        }
-        // END_INCLUDE (configure_preview)
-
+        profile.videoFrameWidth = mWidth;
+        profile.videoFrameHeight =mHeight;
 
         // BEGIN_INCLUDE (configure_media_recorder)
         mMediaRecorder = new MediaRecorder();
@@ -71,11 +43,10 @@ public class NativeMediaRecorder {
         // Step 1: Unlock and set camera to MediaRecorder
         mCamera.unlock();
         mMediaRecorder.setCamera(mCamera);
-
+        mMediaRecorder.setOrientationHint(90);
         // Step 2: Set sources
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-
         // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
         mMediaRecorder.setProfile(profile);
 
@@ -100,6 +71,55 @@ public class NativeMediaRecorder {
             return false;
         }
         return true;
+    }
+
+    public void preShow() {
+        GlobalExecutor.newInstance().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                preView();
+            }
+        });
+    }
+
+    public void preView() {
+        // BEGIN_INCLUDE (configure_preview)
+        mCamera = RecordCameraUtils.getDefaultCameraInstance();
+
+        // We need to make sure that our preview and recording video size are supported by the
+        // camera. Query camera to find all the sizes and choose the optimal size given the
+        // dimensions of our preview surface.
+        Camera.Parameters parameters = mCamera.getParameters();
+        List<Camera.Size> mSupportedPreviewSizes = parameters.getSupportedPreviewSizes();
+        List<Camera.Size> mSupportedVideoSizes = parameters.getSupportedVideoSizes();
+        Camera.Size optimalSize = RecordCameraUtils.getOptimalVideoSize(mSupportedVideoSizes,
+                mSupportedPreviewSizes, mTextureView.getWidth(), mTextureView.getHeight());
+
+        // Use the same size for recording profile.
+        CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+        mHeight = optimalSize.height;
+        mWidth = optimalSize.width;
+        profile.videoFrameWidth = mWidth;
+        profile.videoFrameHeight = mHeight;
+
+        // likewise for the camera object itself.
+        parameters.setPreviewSize(profile.videoFrameWidth, profile.videoFrameHeight);
+        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+        mCamera.setParameters(parameters);
+        mCamera.setDisplayOrientation(90);
+        try {
+            // Requires API level 11+, For backward compatibility use {@link setPreviewDisplay}
+            // with {@link SurfaceView}
+            mCamera.setPreviewTexture(mTextureView.getSurfaceTexture());
+            mCamera.startPreview();
+        } catch (IOException e) {
+            Logger.e(TAG, "Surface texture is unavailable or unsuitable" + e.getMessage());
+        }
     }
 
     private void releaseMediaRecorder() {
@@ -176,5 +196,8 @@ public class NativeMediaRecorder {
         releaseMediaRecorder();
         // release the camera immediately on pause event
         releaseCamera();
+    }
+    public void onResume(){
+        preView();
     }
 }

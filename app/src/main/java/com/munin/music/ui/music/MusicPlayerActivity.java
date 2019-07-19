@@ -29,6 +29,8 @@ import java.util.List;
 
 /**
  * @author M
+ * TODO 本地音频文件播放功能
+ * TODO 支持更多的音频文件
  */
 public class MusicPlayerActivity extends BaseActivity implements ViewPager.OnPageChangeListener {
     private static final String TAG = "MusicPlayerActivity";
