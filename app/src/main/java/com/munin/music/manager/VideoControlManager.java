@@ -14,6 +14,7 @@ import com.munin.library.media.video.NativeVideoPlayer;
 import com.munin.library.utils.ViewUtils;
 import com.munin.music.manager.video.VideoState;
 import com.munin.music.ui.common.FullScreenVideoPlayerView;
+import com.munin.music.utils.ActivityUtils;
 
 /**
  * @author M
@@ -111,6 +112,7 @@ public class VideoControlManager implements IVideoListener {
 
     public void enterFullScreen(@NonNull ViewGroup contentView) {
         if (mMode == MODE_NORMAL) {
+            ActivityUtils.changeOrientation(contentView.getContext(),true);
             removeFullScreen();
             if (mVideoView != null) {
                 mVideoView.enterFullScreen();

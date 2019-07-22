@@ -21,6 +21,7 @@ import com.munin.music.R;
 import com.munin.music.manager.VideoControlManager;
 import com.munin.music.manager.video.VideoState;
 import com.munin.music.ui.vlog.VideoDetailActivity;
+import com.munin.music.utils.ActivityUtils;
 
 /**
  * @author M
@@ -214,6 +215,7 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
 
     @Override
     public void exitFullScreen() {
+        ActivityUtils.changeOrientation(getContext(),false);
         mVideoCoverView.changeCoverShow(false);
         ViewUtils.addView(mContentView, mVideoView);
         mVideoCoverView.changeFullScreenIcon(true);

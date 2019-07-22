@@ -40,6 +40,7 @@ public class ViewUtils {
 
     public static void setText(TextView view, String content) {
         if (view == null) {
+            Logger.i(TAG,"setText: view is null?");
             return;
         }
         if (content == null) {
