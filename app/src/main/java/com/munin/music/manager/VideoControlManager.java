@@ -66,6 +66,7 @@ public class VideoControlManager implements IVideoListener {
         if (mVideoView == videoView) {
             return;
         }
+        releaseSurface();
         mVideoView.changeVideoView(true);
         videoView.changeVideoView(false);
     }
