@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
+import com.munin.library.log.Logger;
 import com.munin.library.media.video.IVideoListener;
 import com.munin.library.media.video.IVideoPlayer;
 import com.munin.library.media.video.IVideoView;
@@ -18,6 +19,7 @@ import com.munin.music.ui.common.FullScreenVideoPlayerView;
  * @author M
  */
 public class VideoControlManager implements IVideoListener {
+    private static final String TAG = "VideoControlManager";
     private static final int MODE_NORMAL = 0;
     public static final int MODE_FULLSCREEN = 1;
     private IVideoView mVideoView, mFullScreenListener;
@@ -135,6 +137,7 @@ public class VideoControlManager implements IVideoListener {
     }
 
     private void releaseSurface() {
+        Logger.i(TAG,"releaseSurface");
         if (mSurfaceTexture != null) {
             mSurfaceTexture.release();
             mSurfaceTexture = null;
@@ -316,6 +319,10 @@ public class VideoControlManager implements IVideoListener {
 
     public boolean canPause() {
         return mCurrentState == VideoState.STATE_PLAYING;
+    }
+
+    public boolean isPlaying() {
+        return canPause();
     }
 
     public boolean canPlay() {

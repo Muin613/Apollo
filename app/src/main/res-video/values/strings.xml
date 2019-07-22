@@ -1,0 +1,4 @@
+<resources>
+    <string name="video_buffering">缓冲中</string>
+    <string name="video_error">视频出错了</string>
+</resources>

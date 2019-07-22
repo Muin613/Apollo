@@ -1,18 +1,17 @@
 package com.munin.music.ui.common;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.AppCompatTextView;
 
+import com.munin.library.common.WeakHandler;
 import com.munin.library.log.Logger;
 import com.munin.library.media.video.IVideoPlayer;
 import com.munin.library.media.video.IVideoView;
@@ -28,13 +27,30 @@ import com.munin.music.ui.vlog.VideoDetailActivity;
  */
 public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnClickListener {
     private static final String TAG = "VideoPlayerView";
-    private FrameLayout mContentView;
-    protected View mPlayOrPauseView, mCoverView, mScreenControlView;
-    private AppCompatTextView mTitle, mTime, mTotalTime;
     protected TextureView mVideoView;
-    private AppCompatImageView mThumbImageView;
-    protected int mState = VideoState.STATE_INIT;
+    protected int mState = VideoState.STATE_DEFAULT;
     private String mUrl = "http://video.maxxipoint.com/Video/Family-60S-0411.mp4";
+    protected VideoCoverView mVideoCoverView;
+    protected FrameLayout mContentView;
+    boolean isShow = false;
+    WeakHandler mHandler = new WeakHandler();
+    Runnable mAction = new Runnable() {
+        @Override
+        public void run() {
+            if (mState == VideoState.STATE_PLAYING) {
+                mVideoCoverView.changeCurrentTime(TimeStampUtils.stampToData("" + VideoControlManager.newInstance().getCurrentPosition()));
+                mHandler.postDelayed(mAction, 1000);
+            } else {
+                mHandler.removeCallbacks(mAction);
+            }
+        }
+    };
+    Runnable mShowAction = new Runnable() {
+        @Override
+        public void run() {
+            mVideoCoverView.changeCoverShow(false);
+        }
+    };
 
     public VideoPlayerView(@NonNull Context context) {
         this(context, null);
@@ -43,74 +59,80 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
     public VideoPlayerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setId(R.id.id_video_player);
-        mContentView = new FrameLayout(context);
+        mVideoCoverView = new VideoCoverView(context);
+        mVideoCoverView.setMinimumHeight(300);
+        mVideoCoverView.setMinimumWidth(600);
         mVideoView = new TextureView(context);
+        mVideoView.setMinimumHeight(300);
+        mContentView = new FrameLayout(context);
         addView(mContentView);
-        inflate(getContext(), R.layout.layout_video_player, this);
+        addView(mVideoCoverView);
     }
 
-    Runnable mRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (mState == VideoState.STATE_PAUSE) {
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        Logger.i(TAG, "dispatchTouchEvent " + ev.getAction());
+        controlCoverShow(ev);
+        return super.dispatchTouchEvent(ev);
+    }
+
+    public void controlCoverShow(MotionEvent ev) {
+        if (VideoControlManager.newInstance().getVideoView() != this) {
+            return;
+        }
+        if (mState == VideoState.STATE_PLAYING) {
+            if (!isShow && ev.getAction() == MotionEvent.ACTION_DOWN) {
+                isShow = true;
+                mHandler.removeCallbacks(mShowAction);
+                mVideoCoverView.changeCoverShow(true);
                 return;
             }
-            ViewUtils.setViewVisible(mCoverView, View.GONE);
+            if (isShow && (ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_CANCEL)) {
+                isShow = false;
+                mHandler.postDelayed(mShowAction, 3000);
+            }
         }
-    };
+    }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         Logger.i(TAG, "onAttachedToWindow");
-        mCoverView = findViewById(R.id.video_cover_view);
-        mPlayOrPauseView = findViewById(R.id.video_play_control);
-        mThumbImageView = findViewById(R.id.video_cover_img);
-        mScreenControlView = findViewById(R.id.video_screen_control);
-        mTotalTime = findViewById(R.id.video_total_time);
-        ViewUtils.setViewClickListener(mPlayOrPauseView, this);
+        mVideoCoverView.setControlPlayOrPause(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (VideoControlManager.newInstance().getVideoView() == VideoPlayerView.this) {
+                    if (VideoControlManager.newInstance().canPause()) {
+                        VideoControlManager.newInstance().pause();
+                        return;
+                    }
+                    if (VideoControlManager.newInstance().canPlay()) {
+                        VideoControlManager.newInstance().start();
+                    }
+                } else {
+                    VideoControlManager.newInstance().attachView(VideoPlayerView.this);
+                }
+            }
+        });
+        mVideoCoverView.setScreenControl(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!VideoControlManager.newInstance().isFullScreen() && VideoControlManager.newInstance().isPlaying()) {
+                    VideoControlManager.newInstance().enterFullScreen(VideoDetailActivity.mContentView);
+                } else {
+                    VideoControlManager.newInstance().exitFullScreen();
+                }
+            }
+        });
         ViewUtils.setViewClickListener(this, this);
-        ViewUtils.setViewClickListener(mScreenControlView, this);
         mVideoView.setSurfaceTextureListener(this);
-        ViewUtils.setViewVisible(mCoverView, View.VISIBLE);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        removeCallbacks(mRunnable);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.video_play_control:
-                if (VideoControlManager.newInstance().getVideoView() == this) {
-                    if (VideoControlManager.newInstance().canPause()) {
-                        VideoControlManager.newInstance().pause();
-                        break;
-                    }
-                    if (VideoControlManager.newInstance().canPlay()) {
-                        VideoControlManager.newInstance().start();
-                        break;
-                    }
-                } else {
-                    VideoControlManager.newInstance().attachView(this);
-                }
-
-                break;
-            case R.id.video_screen_control:
-                if (!VideoControlManager.newInstance().isFullScreen()) {
-                    VideoControlManager.newInstance().enterFullScreen(VideoDetailActivity.mContentView);
-                } else {
-                    VideoControlManager.newInstance().exitFullScreen();
-                }
-                break;
             case R.id.id_video_player:
-                if (VideoControlManager.newInstance().getVideoView() == this) {
-                    ViewUtils.setViewVisible(mCoverView, View.VISIBLE);
-                    postDelayed(mRunnable, 3000);
-                } else {
+                if (VideoControlManager.newInstance().getVideoView() != this) {
                     VideoControlManager.newInstance().attachView(this);
                 }
                 break;
@@ -127,13 +149,11 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
             VideoControlManager.newInstance().changeSurfaceTexture(surface);
             play();
         } else {
+            Logger.i(TAG, "设置");
             mVideoView.setSurfaceTexture(VideoControlManager.newInstance().getSurfaceTexture());
         }
     }
 
-    public void startPlay() {
-        ViewUtils.addView(mContentView, mVideoView);
-    }
 
     public void play() {
         VideoControlManager.newInstance().play(mUrl);
@@ -172,7 +192,7 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
     @Override
     public void onPrepared(IVideoPlayer videoPlayer) {
         VideoControlManager.newInstance().start();
-        mTotalTime.setText(TimeStampUtils.stampToData("" + VideoControlManager.newInstance().getDuration()));
+        mVideoCoverView.changeTotalTime(TimeStampUtils.stampToData("" + VideoControlManager.newInstance().getDuration()));
     }
 
     @Override
@@ -187,40 +207,43 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
 
     @Override
     public void enterFullScreen() {
-        removeCallbacks(mRunnable);
-        ViewUtils.setViewVisible(mCoverView, View.GONE);
+        mVideoCoverView.changeCoverShow(false);
         ViewUtils.removeView(mVideoView);
-        mScreenControlView.setBackgroundResource(R.drawable.video_no_fullscreen);
+        mVideoCoverView.changeFullScreenIcon(false);
     }
 
     @Override
     public void exitFullScreen() {
-        removeCallbacks(mRunnable);
-        ViewUtils.setViewVisible(mCoverView, View.GONE);
+        mVideoCoverView.changeCoverShow(false);
         ViewUtils.addView(mContentView, mVideoView);
-        mScreenControlView.setBackgroundResource(R.drawable.video_fullscreen);
-
+        mVideoCoverView.changeFullScreenIcon(true);
     }
 
     @Override
     public void changeVideoView(boolean isLeave) {
         Logger.i(TAG, "changeVideoView " + isLeave);
         if (isLeave) {
-            removeCallbacks(mRunnable);
+            mHandler.removeCallbacks(mShowAction);
             ViewUtils.removeView(mVideoView);
-            ViewUtils.setViewVisible(mCoverView, View.VISIBLE);
+            mVideoCoverView.changeCoverShow(true);
         } else {
             ViewUtils.addView(mContentView, mVideoView);
         }
     }
 
+    public void setTitle(String title) {
+        mVideoCoverView.setTitle(title);
+    }
+
     @Override
     public void notifyVideoState(int state) {
+        Logger.i(TAG, "notifyVideoState: state=" + state);
         mState = state;
         if (mState == VideoState.STATE_PAUSE) {
-            ViewUtils.setViewVisible(mCoverView, View.VISIBLE);
+            mHandler.removeCallbacks(mShowAction);
+            mVideoCoverView.changeCoverShow(true);
         } else {
-            postDelayed(mRunnable, 3000);
+            mVideoCoverView.changeCoverShow(false);
         }
     }
 

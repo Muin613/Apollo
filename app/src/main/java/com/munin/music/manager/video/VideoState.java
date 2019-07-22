@@ -1,6 +1,7 @@
 package com.munin.music.manager.video;
 
 public class VideoState {
+    public static final int STATE_DEFAULT = -1;
     public static final int STATE_INIT = 0;
     public static final int STATE_ERROR = 1;
     public static final int STATE_COMPLETE = 3;
