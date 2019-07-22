@@ -112,7 +112,7 @@ public class VideoControlManager implements IVideoListener {
 
     public void enterFullScreen(@NonNull ViewGroup contentView) {
         if (mMode == MODE_NORMAL) {
-            ActivityUtils.changeOrientation(contentView.getContext(),true);
+            ActivityUtils.INSTANCE.changeOrientation(contentView.getContext(),true);
             removeFullScreen();
             if (mVideoView != null) {
                 mVideoView.enterFullScreen();

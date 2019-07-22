@@ -150,7 +150,6 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
             VideoControlManager.newInstance().changeSurfaceTexture(surface);
             play();
         } else {
-            Logger.i(TAG, "设置");
             mVideoView.setSurfaceTexture(VideoControlManager.newInstance().getSurfaceTexture());
         }
     }
@@ -215,7 +214,7 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
 
     @Override
     public void exitFullScreen() {
-        ActivityUtils.changeOrientation(getContext(),false);
+        ActivityUtils.INSTANCE.changeOrientation(getContext(),false);
         mVideoCoverView.changeCoverShow(false);
         ViewUtils.addView(mContentView, mVideoView);
         mVideoCoverView.changeFullScreenIcon(true);

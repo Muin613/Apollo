@@ -44,7 +44,6 @@ public class FullScreenVideoPlayerView extends VideoPlayerView {
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         Logger.i(TAG, "onSurfaceTextureAvailable");
         if (VideoControlManager.newInstance().isExistSurface()) {
-            Logger.i(TAG, "设置");
             mVideoView.setSurfaceTexture(VideoControlManager.newInstance().getSurfaceTexture());
             mVideoCoverView.changeCoverShow(false);
         }
