@@ -15,6 +15,7 @@ import com.munin.library.common.WeakHandler;
 import com.munin.library.log.Logger;
 import com.munin.library.media.video.IVideoPlayer;
 import com.munin.library.media.video.IVideoView;
+import com.munin.library.utils.ResourceUtils;
 import com.munin.library.utils.TimeStampUtils;
 import com.munin.library.utils.ViewUtils;
 import com.munin.music.R;
@@ -26,7 +27,7 @@ import com.munin.music.utils.ActivityUtils;
 /**
  * @author M
  */
-public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnClickListener {
+public class VideoPlayerView extends FrameLayout implements IVideoView {
     private static final String TAG = "VideoPlayerView";
     protected TextureView mVideoView;
     protected int mState = VideoState.STATE_DEFAULT;
@@ -34,6 +35,7 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
     protected VideoCoverView mVideoCoverView;
     protected FrameLayout mContentView;
     boolean isShow = false;
+    private int mPercent = 0;
     WeakHandler mHandler = new WeakHandler();
     Runnable mAction = new Runnable() {
         @Override
@@ -49,9 +51,10 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
     Runnable mShowAction = new Runnable() {
         @Override
         public void run() {
-            mVideoCoverView.changeCoverShow(false);
+            mVideoCoverView.showCoverControl(false);
         }
     };
+    private VideoMediaNoticeController mController;
 
     public VideoPlayerView(@NonNull Context context) {
         this(context, null);
@@ -68,6 +71,7 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
         mContentView = new FrameLayout(context);
         addView(mContentView);
         addView(mVideoCoverView);
+        mController=new VideoMediaNoticeController(mVideoCoverView);
     }
 
     @Override
@@ -85,11 +89,12 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
             if (!isShow && ev.getAction() == MotionEvent.ACTION_DOWN) {
                 isShow = true;
                 mHandler.removeCallbacks(mShowAction);
-                mVideoCoverView.changeCoverShow(true);
+                mVideoCoverView.showCoverControl(true);
                 return;
             }
             if (isShow && (ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_CANCEL)) {
                 isShow = false;
+                mHandler.removeCallbacks(mShowAction);
                 mHandler.postDelayed(mShowAction, 3000);
             }
         }
@@ -105,12 +110,15 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
                 if (VideoControlManager.newInstance().getVideoView() == VideoPlayerView.this) {
                     if (VideoControlManager.newInstance().canPause()) {
                         VideoControlManager.newInstance().pause();
+                        mVideoCoverView.changePlayIcon(true);
                         return;
                     }
                     if (VideoControlManager.newInstance().canPlay()) {
                         VideoControlManager.newInstance().start();
+                        mVideoCoverView.changePlayIcon(false);
                     }
                 } else {
+                    mVideoCoverView.changePlayIcon(false);
                     VideoControlManager.newInstance().attachView(VideoPlayerView.this);
                 }
             }
@@ -125,22 +133,10 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
                 }
             }
         });
-        ViewUtils.setViewClickListener(this, this);
         mVideoView.setSurfaceTextureListener(this);
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.id_video_player:
-                if (VideoControlManager.newInstance().getVideoView() != this) {
-                    VideoControlManager.newInstance().attachView(this);
-                }
-                break;
-            default:
-                break;
-        }
-    }
+
 
 
     @Override
@@ -148,6 +144,7 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
         Logger.i(TAG, "onSurfaceTextureAvailable");
         if (!VideoControlManager.newInstance().isExistSurface()) {
             VideoControlManager.newInstance().changeSurfaceTexture(surface);
+            mVideoCoverView.setNotice(ResourceUtils.getString(R.string.video_buffering));
             play();
         } else {
             mVideoView.setSurfaceTexture(VideoControlManager.newInstance().getSurfaceTexture());
@@ -181,11 +178,13 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
 
     @Override
     public boolean onError(IVideoPlayer videoPlayer, int what, int extra) {
+        mController.handleError(what);
         return false;
     }
 
     @Override
     public boolean onInfo(IVideoPlayer videoPlayer, int what, int extra) {
+        mController.handleInfo(what);
         return false;
     }
 
@@ -197,7 +196,10 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
 
     @Override
     public void onBufferingUpdate(IVideoPlayer videoPlayer, int percent) {
-
+        Logger.i(TAG,"onBufferingUpdate: percent = "+percent);
+        if (mState == VideoState.STATE_PLAYING || mState == VideoState.STATE_PAUSE) {
+            mPercent = percent;
+        }
     }
 
     @Override
@@ -207,7 +209,7 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
 
     @Override
     public void enterFullScreen() {
-        mVideoCoverView.changeCoverShow(false);
+        mVideoCoverView.showCoverControl(false);
         ViewUtils.removeView(mVideoView);
         mVideoCoverView.changeFullScreenIcon(false);
     }
@@ -215,7 +217,7 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
     @Override
     public void exitFullScreen() {
         ActivityUtils.INSTANCE.changeOrientation(getContext(),false);
-        mVideoCoverView.changeCoverShow(false);
+        mVideoCoverView.showCoverControl(false);
         ViewUtils.addView(mContentView, mVideoView);
         mVideoCoverView.changeFullScreenIcon(true);
     }
@@ -226,7 +228,7 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
         if (isLeave) {
             mHandler.removeCallbacks(mShowAction);
             ViewUtils.removeView(mVideoView);
-            mVideoCoverView.changeCoverShow(true);
+            mVideoCoverView.showCoverControl(true);
         } else {
             ViewUtils.addView(mContentView, mVideoView);
         }
@@ -242,9 +244,10 @@ public class VideoPlayerView extends FrameLayout implements IVideoView, View.OnC
         mState = state;
         if (mState == VideoState.STATE_PAUSE) {
             mHandler.removeCallbacks(mShowAction);
-            mVideoCoverView.changeCoverShow(true);
-        } else {
-            mVideoCoverView.changeCoverShow(false);
+            mVideoCoverView.showCoverControl(true);
+        } else if (mState == VideoState.STATE_PLAYING && mPercent > 0) {
+            mHandler.removeCallbacks(mShowAction);
+            mHandler.postDelayed(mShowAction,3000);
         }
     }
 

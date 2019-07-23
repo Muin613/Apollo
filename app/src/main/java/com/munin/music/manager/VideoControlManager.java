@@ -26,7 +26,7 @@ public class VideoControlManager implements IVideoListener {
     private IVideoView mVideoView, mFullScreenListener;
     private SurfaceTexture mSurfaceTexture;
     private Surface mSurface;
-    private int mCurrentState = VideoState.STATE_INIT;
+    public int mCurrentState = VideoState.STATE_INIT;
     private int mMode = MODE_NORMAL;
     private static volatile VideoControlManager mInstance = new VideoControlManager();
     private static boolean mIsClickToPause = false;
@@ -156,9 +156,9 @@ public class VideoControlManager implements IVideoListener {
         if (mPlayer == null) {
             return;
         }
+        mPlayer.start();
         mCurrentState = VideoState.STATE_PLAYING;
         notifyVideoState();
-        mPlayer.start();
     }
 
     public void resume() {

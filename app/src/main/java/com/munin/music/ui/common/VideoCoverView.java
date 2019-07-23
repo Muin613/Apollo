@@ -10,9 +10,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
+
 import com.munin.library.image.ImageLoadUtils;
+import com.munin.library.log.Logger;
 import com.munin.library.utils.ViewUtils;
 import com.munin.music.R;
+import com.munin.music.manager.VideoControlManager;
 
 public class VideoCoverView extends FrameLayout {
     private static final String TAG = "VideoCoverView";
@@ -51,8 +54,17 @@ public class VideoCoverView extends FrameLayout {
     }
 
     public void setNotice(String notice) {
+        ViewUtils.setViewVisible(mPlayOrPauseView, View.GONE);
+        changeCoverShow(true);
         ViewUtils.setViewVisible(mNoticeView, View.VISIBLE);
         ViewUtils.setText(mNoticeView, notice);
+    }
+
+    public void hideNotice() {
+        changeCoverShow(false);
+        ViewUtils.setText(mNoticeView, "");
+        ViewUtils.setViewVisible(mNoticeView, View.GONE);
+        ViewUtils.setViewVisible(mPlayOrPauseView, View.VISIBLE);
     }
 
     public void changeCurrentTime(String currentTime) {
@@ -64,6 +76,7 @@ public class VideoCoverView extends FrameLayout {
     }
 
     public void loadThumbImage(String url) {
+        ViewUtils.setViewVisible(mThumbImageView, View.VISIBLE);
         ImageLoadUtils.loadImg(getContext(), url, mThumbImageView);
     }
 
@@ -83,6 +96,11 @@ public class VideoCoverView extends FrameLayout {
         ViewUtils.setViewVisible(mCoverView, View.GONE);
     }
 
+    public void showCoverControl(boolean isShow) {
+        changeCoverShow(isShow);
+        ViewUtils.setViewVisible(mPlayOrPauseView, View.VISIBLE);
+    }
+
     public void changeFullScreenIcon(boolean isFullFlag) {
         if (isFullFlag) {
             mScreenControlView.setBackgroundResource(R.drawable.video_fullscreen);
@@ -90,10 +108,20 @@ public class VideoCoverView extends FrameLayout {
         }
         mScreenControlView.setBackgroundResource(R.drawable.video_no_fullscreen);
     }
-    public void setControlPlayOrPause( View.OnClickListener clickListener){
+
+    public void setControlPlayOrPause(View.OnClickListener clickListener) {
         ViewUtils.setViewClickListener(mPlayOrPauseView, clickListener);
     }
-    public void setScreenControl( View.OnClickListener clickListener){
+
+    public void setScreenControl(View.OnClickListener clickListener) {
         ViewUtils.setViewClickListener(mScreenControlView, clickListener);
+    }
+
+    public void changePlayIcon(boolean isPause) {
+        if (isPause) {
+            mPlayOrPauseView.setBackgroundResource(R.drawable.video_pause);
+        } else {
+            mPlayOrPauseView.setBackgroundResource(R.drawable.video_play);
+        }
     }
 }

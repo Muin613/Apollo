@@ -1,4 +1,6 @@
 <resources>
     <string name="video_buffering">缓冲中</string>
     <string name="video_error">视频出错了</string>
+    <string name="video_unknown_error">未知错误</string>
+    <string name="video_remote_servlet_error">远程服务器未知错误</string>
 </resources>
