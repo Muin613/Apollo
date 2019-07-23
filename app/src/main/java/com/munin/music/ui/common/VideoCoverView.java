@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,13 +16,14 @@ import com.munin.library.image.ImageLoadUtils;
 import com.munin.library.log.Logger;
 import com.munin.library.utils.ViewUtils;
 import com.munin.music.R;
-import com.munin.music.manager.VideoControlManager;
 
 public class VideoCoverView extends FrameLayout {
     private static final String TAG = "VideoCoverView";
     private AppCompatTextView mNoticeView, mCurrentTimeView, mTotalTimeView, mTitleView;
     public View mPlayOrPauseView, mCoverView, mScreenControlView, mBottomControlView;
     private AppCompatImageView mThumbImageView;
+    private SeekBar mSeekBar;
+    private boolean mIsShowNotice = false;
 
     public VideoCoverView(@NonNull Context context) {
         this(context, null);
@@ -39,6 +41,7 @@ public class VideoCoverView extends FrameLayout {
         mTotalTimeView = findViewById(R.id.video_total_time);
         mCurrentTimeView = findViewById(R.id.video_current_time);
         mNoticeView = findViewById(R.id.video_notice);
+        mSeekBar = findViewById(R.id.video_control_seek);
     }
 
     @Override
@@ -54,17 +57,17 @@ public class VideoCoverView extends FrameLayout {
     }
 
     public void setNotice(String notice) {
-        ViewUtils.setViewVisible(mPlayOrPauseView, View.GONE);
-        changeCoverShow(true);
+        changeCoverShow(false);
+        mIsShowNotice = true;
         ViewUtils.setViewVisible(mNoticeView, View.VISIBLE);
         ViewUtils.setText(mNoticeView, notice);
     }
 
     public void hideNotice() {
         changeCoverShow(false);
+        mIsShowNotice = false;
         ViewUtils.setText(mNoticeView, "");
         ViewUtils.setViewVisible(mNoticeView, View.GONE);
-        ViewUtils.setViewVisible(mPlayOrPauseView, View.VISIBLE);
     }
 
     public void changeCurrentTime(String currentTime) {
@@ -88,6 +91,10 @@ public class VideoCoverView extends FrameLayout {
         ViewUtils.setViewVisible(mBottomControlView, View.GONE);
     }
 
+    public void changeSeekBar(int percent) {
+        mSeekBar.setProgress(percent);
+    }
+
     public void changeCoverShow(boolean isShow) {
         if (isShow) {
             ViewUtils.setViewVisible(mCoverView, View.VISIBLE);
@@ -96,9 +103,22 @@ public class VideoCoverView extends FrameLayout {
         ViewUtils.setViewVisible(mCoverView, View.GONE);
     }
 
+    public boolean isShowCover() {
+        return ViewUtils.isVisible(mCoverView);
+    }
+
     public void showCoverControl(boolean isShow) {
+        if (mIsShowNotice) {
+            return;
+        }
         changeCoverShow(isShow);
-        ViewUtils.setViewVisible(mPlayOrPauseView, View.VISIBLE);
+    }
+
+    public void reset() {
+        mIsShowNotice = false;
+        hideNotice();
+        changeCoverShow(true);
+
     }
 
     public void changeFullScreenIcon(boolean isFullFlag) {

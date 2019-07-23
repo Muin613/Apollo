@@ -36,12 +36,15 @@ public class VideoPlayerView extends FrameLayout implements IVideoView {
     protected FrameLayout mContentView;
     boolean isShow = false;
     private int mPercent = 0;
+    private int mTotalTime=0;
     WeakHandler mHandler = new WeakHandler();
     Runnable mAction = new Runnable() {
         @Override
         public void run() {
-            if (mState == VideoState.STATE_PLAYING) {
-                mVideoCoverView.changeCurrentTime(TimeStampUtils.stampToData("" + VideoControlManager.newInstance().getCurrentPosition()));
+            if (mState == VideoState.STATE_PLAYING && mVideoCoverView.isShowCover()) {
+                int currentTime=VideoControlManager.newInstance().getCurrentPosition();
+                mVideoCoverView.changeCurrentTime(TimeStampUtils.stampToData("" + currentTime));
+                mVideoCoverView.changeSeekBar(100*currentTime/mTotalTime);
                 mHandler.postDelayed(mAction, 1000);
             } else {
                 mHandler.removeCallbacks(mAction);
@@ -51,6 +54,7 @@ public class VideoPlayerView extends FrameLayout implements IVideoView {
     Runnable mShowAction = new Runnable() {
         @Override
         public void run() {
+            mHandler.removeCallbacks(mAction);
             mVideoCoverView.showCoverControl(false);
         }
     };
@@ -71,33 +75,42 @@ public class VideoPlayerView extends FrameLayout implements IVideoView {
         mContentView = new FrameLayout(context);
         addView(mContentView);
         addView(mVideoCoverView);
-        mController=new VideoMediaNoticeController(mVideoCoverView);
+        mController = new VideoMediaNoticeController(mVideoCoverView);
+        setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                controlCoverShow(event);
+                return true;
+            }
+        });
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        Logger.i(TAG, "dispatchTouchEvent " + ev.getAction());
-        controlCoverShow(ev);
-        return super.dispatchTouchEvent(ev);
+    public boolean onTouchEvent(MotionEvent event) {
+        return super.onTouchEvent(event);
     }
 
-    public void controlCoverShow(MotionEvent ev) {
+    public boolean controlCoverShow(MotionEvent ev) {
         if (VideoControlManager.newInstance().getVideoView() != this) {
-            return;
+            return false;
         }
         if (mState == VideoState.STATE_PLAYING) {
             if (!isShow && ev.getAction() == MotionEvent.ACTION_DOWN) {
                 isShow = true;
                 mHandler.removeCallbacks(mShowAction);
+                mHandler.removeCallbacks(mAction);
+                mHandler.post(mAction);
                 mVideoCoverView.showCoverControl(true);
-                return;
-            }
-            if (isShow && (ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_CANCEL)) {
-                isShow = false;
-                mHandler.removeCallbacks(mShowAction);
-                mHandler.postDelayed(mShowAction, 3000);
+                return true;
             }
         }
+        if (isShow && (ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_CANCEL)) {
+            isShow = false;
+            mHandler.removeCallbacks(mShowAction);
+            mHandler.postDelayed(mShowAction, 3000);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -119,6 +132,7 @@ public class VideoPlayerView extends FrameLayout implements IVideoView {
                     }
                 } else {
                     mVideoCoverView.changePlayIcon(false);
+                    mTotalTime = 0;
                     VideoControlManager.newInstance().attachView(VideoPlayerView.this);
                 }
             }
@@ -135,8 +149,6 @@ public class VideoPlayerView extends FrameLayout implements IVideoView {
         });
         mVideoView.setSurfaceTextureListener(this);
     }
-
-
 
 
     @Override
@@ -184,19 +196,22 @@ public class VideoPlayerView extends FrameLayout implements IVideoView {
 
     @Override
     public boolean onInfo(IVideoPlayer videoPlayer, int what, int extra) {
-        mController.handleInfo(what);
+        if (mState != VideoState.STATE_PAUSE) {
+            mController.handleInfo(what);
+        }
         return false;
     }
 
     @Override
     public void onPrepared(IVideoPlayer videoPlayer) {
         VideoControlManager.newInstance().start();
-        mVideoCoverView.changeTotalTime(TimeStampUtils.stampToData("" + VideoControlManager.newInstance().getDuration()));
+        mTotalTime = VideoControlManager.newInstance().getDuration();
+        mVideoCoverView.changeTotalTime(TimeStampUtils.stampToData("" + mTotalTime));
     }
 
     @Override
     public void onBufferingUpdate(IVideoPlayer videoPlayer, int percent) {
-        Logger.i(TAG,"onBufferingUpdate: percent = "+percent);
+        Logger.i(TAG, "onBufferingUpdate: percent = " + percent);
         if (mState == VideoState.STATE_PLAYING || mState == VideoState.STATE_PAUSE) {
             mPercent = percent;
         }
@@ -216,7 +231,7 @@ public class VideoPlayerView extends FrameLayout implements IVideoView {
 
     @Override
     public void exitFullScreen() {
-        ActivityUtils.INSTANCE.changeOrientation(getContext(),false);
+        ActivityUtils.INSTANCE.changeOrientation(getContext(), false);
         mVideoCoverView.showCoverControl(false);
         ViewUtils.addView(mContentView, mVideoView);
         mVideoCoverView.changeFullScreenIcon(true);
@@ -228,8 +243,9 @@ public class VideoPlayerView extends FrameLayout implements IVideoView {
         if (isLeave) {
             mHandler.removeCallbacks(mShowAction);
             ViewUtils.removeView(mVideoView);
-            mVideoCoverView.showCoverControl(true);
+            mVideoCoverView.reset();
         } else {
+            mHandler.removeCallbacks(mShowAction);
             ViewUtils.addView(mContentView, mVideoView);
         }
     }
@@ -247,7 +263,7 @@ public class VideoPlayerView extends FrameLayout implements IVideoView {
             mVideoCoverView.showCoverControl(true);
         } else if (mState == VideoState.STATE_PLAYING && mPercent > 0) {
             mHandler.removeCallbacks(mShowAction);
-            mHandler.postDelayed(mShowAction,3000);
+            mHandler.postDelayed(mShowAction, 3000);
         }
     }
 

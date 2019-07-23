@@ -17,7 +17,7 @@ public class VideoMediaNoticeController {
             mVideoCoverView.setNotice(ResourceUtils.getString(R.string.video_buffering));
             return;
         }
-        if(what==MediaPlayer.MEDIA_INFO_BUFFERING_END){
+        if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END || what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
             mVideoCoverView.hideNotice();
             return;
         }
