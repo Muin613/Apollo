@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,16 +36,17 @@ public class VideoPlayerView extends FrameLayout implements IVideoView {
     protected VideoCoverView mVideoCoverView;
     protected FrameLayout mContentView;
     boolean isShow = false;
+    boolean isSeek = false;
     private int mPercent = 0;
-    private int mTotalTime=0;
+    private int mTotalTime = 0;
     WeakHandler mHandler = new WeakHandler();
     Runnable mAction = new Runnable() {
         @Override
         public void run() {
-            if (mState == VideoState.STATE_PLAYING && mVideoCoverView.isShowCover()) {
-                int currentTime=VideoControlManager.newInstance().getCurrentPosition();
+            if (mState == VideoState.STATE_PLAYING && mVideoCoverView.isShowCover()  && !isSeek) {
+                int currentTime = VideoControlManager.newInstance().getCurrentPosition();
                 mVideoCoverView.changeCurrentTime(TimeStampUtils.stampToData("" + currentTime));
-                mVideoCoverView.changeSeekBar(100*currentTime/mTotalTime);
+                mVideoCoverView.changeSeekBar(100 * currentTime / mTotalTime);
                 mHandler.postDelayed(mAction, 1000);
             } else {
                 mHandler.removeCallbacks(mAction);
@@ -144,6 +146,41 @@ public class VideoPlayerView extends FrameLayout implements IVideoView {
                     VideoControlManager.newInstance().enterFullScreen(VideoDetailActivity.mContentView);
                 } else {
                     VideoControlManager.newInstance().exitFullScreen();
+                }
+            }
+        });
+        mVideoCoverView.setSeekBarListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                Logger.i("fuck", "onProgressChanged" + progress + "  " + fromUser);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                Logger.i("fuck", "onStartTrackingTouch");
+                if (mState == VideoState.STATE_PLAYING) {
+                    if (!isShow) {
+                        isSeek = true;
+                        isShow = true;
+                        mHandler.removeCallbacks(mShowAction);
+                        mHandler.removeCallbacks(mAction);
+                        mHandler.post(mAction);
+                        mVideoCoverView.showCoverControl(true);
+                    }
+                }
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Logger.i("fuck", "onStopTrackingTouch");
+                if (isShow) {
+                    isSeek = false;
+                    isShow = false;
+                    mHandler.removeCallbacks(mShowAction);
+                    mHandler.postDelayed(mShowAction, 3000);
+                }
+                if (mState == VideoState.STATE_PLAYING && mVideoCoverView.isShowCover()) {
+                    VideoControlManager.newInstance().seekTo(mTotalTime * seekBar.getProgress() / 100);
                 }
             }
         });

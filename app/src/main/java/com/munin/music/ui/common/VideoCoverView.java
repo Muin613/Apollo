@@ -13,7 +13,6 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 
 import com.munin.library.image.ImageLoadUtils;
-import com.munin.library.log.Logger;
 import com.munin.library.utils.ViewUtils;
 import com.munin.music.R;
 
@@ -93,6 +92,10 @@ public class VideoCoverView extends FrameLayout {
 
     public void changeSeekBar(int percent) {
         mSeekBar.setProgress(percent);
+    }
+
+    public void setSeekBarListener(SeekBar.OnSeekBarChangeListener listener){
+        mSeekBar.setOnSeekBarChangeListener(listener);
     }
 
     public void changeCoverShow(boolean isShow) {
