@@ -1,16 +1,22 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'org.greenrobot.greendao'
 apply from: "${rootProject.rootDir}/package-upload.gradle"
 
+greendao {
+    schemaVersion 1 //数据库版本号
+    daoPackage 'com.munin.music.dao'
+    targetGenDir 'src/main/java' //设置daoPackage所在的文件路径
+}
 android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.munin.music"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
