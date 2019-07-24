@@ -1,1 +1,1 @@
-include ':app', ':library',':buildSrc',':config'
+include ':app', ':library',':buildSrc',':config', ':videocache'

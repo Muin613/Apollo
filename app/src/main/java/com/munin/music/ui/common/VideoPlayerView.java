@@ -20,6 +20,7 @@ import com.munin.library.utils.ResourceUtils;
 import com.munin.library.utils.TimeStampUtils;
 import com.munin.library.utils.ViewUtils;
 import com.munin.music.R;
+import com.munin.music.config.ApolloApplication;
 import com.munin.music.manager.VideoControlManager;
 import com.munin.music.manager.video.VideoState;
 import com.munin.music.ui.vlog.VideoDetailActivity;
@@ -202,7 +203,8 @@ public class VideoPlayerView extends FrameLayout implements IVideoView {
 
 
     public void play() {
-        VideoControlManager.newInstance().play(mUrl);
+        String url= ApolloApplication.getProxy(getContext()).getProxyUrl(mUrl);
+        VideoControlManager.newInstance().play(url);
     }
 
     @Override
