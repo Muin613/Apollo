@@ -15,10 +15,10 @@ import java.io.InputStreamReader;
 /**
  * @author M
  */
-public class DBMigrationUtils {
-    private static final String TAG = "DBMigrationUtils";
+public class SqlScriptUtils {
+    private static final String TAG = "SqlScriptUtils";
 
-    public static void update(Database db, String sqlName) {
+    public static void execute(Database db, String sqlName) {
         if (db == null) {
             Logger.i(TAG, "update: db is null!");
             return;

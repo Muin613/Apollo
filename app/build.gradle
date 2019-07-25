@@ -5,7 +5,7 @@ apply plugin: 'org.greenrobot.greendao'
 apply from: "${rootProject.rootDir}/package-upload.gradle"
 
 greendao {
-    schemaVersion 1 //数据库版本号
+    schemaVersion 2 //数据库版本号
     daoPackage 'com.munin.music.dao'
     targetGenDir 'src/main/java' //设置daoPackage所在的文件路径
 }
