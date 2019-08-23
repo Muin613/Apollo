@@ -8,7 +8,7 @@ import androidx.room.TypeConverters;
 import java.util.Date;
 
 @Database(entities = {User.class}, version = 2,exportSchema = false)
-//@TypeConverters({Converters.class})
+@TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     public abstract UserDao userDao();
 }

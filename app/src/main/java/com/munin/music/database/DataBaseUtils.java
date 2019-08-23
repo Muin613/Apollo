@@ -23,7 +23,7 @@ public class DataBaseUtils {
     private static AppDatabase mAppDatabase;
 
     public static void initGreenDao(Context context) {
-        mAppDatabase = Room.databaseBuilder(context, AppDatabase.class, "munin-db")
+        mAppDatabase = Room.databaseBuilder(context, AppDatabase.class, "muin-db")
                 .allowMainThreadQueries()
                 .addMigrations(new Migration(1,2) {
                     @Override
