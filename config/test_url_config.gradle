@@ -1,3 +1,4 @@
 ext {
-    host = "www.baidu2.com"
+    host = "http://www.baidu2.com"
+    picture_host="https://huaban.com/"
 }

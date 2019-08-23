@@ -105,8 +105,21 @@ public class XRefreshLayoutUtils {
             }
         } else if (manager instanceof StaggeredGridLayoutManager) {
             StaggeredGridLayoutManager layoutManager = (StaggeredGridLayoutManager) manager;
+            int firstChildTop = 0;
+            if (recyclerView.getChildCount() > 0) {
+                // 处理item高度超过一屏幕时的情况
+                View firstVisibleChild = recyclerView.getChildAt(0);
+                if (firstVisibleChild != null && firstVisibleChild.getMeasuredHeight() >= recyclerView.getMeasuredHeight()) {
+                    return !recyclerView.canScrollVertically(-1);
+                }
+                // 如果RecyclerView的子控件数量不为0，获取第一个子控件的top
+                // 解决item的topMargin不为0时不能触发下拉刷新
+                View firstChild = recyclerView.getChildAt(0);
+                RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams) firstChild.getLayoutParams();
+                firstChildTop = firstChild.getTop() - layoutParams.topMargin - getRecyclerViewItemTopInset(layoutParams) - recyclerView.getPaddingTop();
+            }
             int[] out = layoutManager.findFirstCompletelyVisibleItemPositions(null);
-            if (out[0] < 1) {
+            if (out[0] < 1 && firstChildTop == 0) {
                 return true;
             }
         }

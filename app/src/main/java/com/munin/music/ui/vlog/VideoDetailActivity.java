@@ -1,5 +1,6 @@
 package com.munin.music.ui.vlog;
 
+import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.view.ViewGroup;
 
@@ -8,6 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.munin.music.R;
+import com.munin.music.dao.User;
+import com.munin.music.database.DataBaseUtils;
 import com.munin.music.manager.VideoControlManager;
 import com.munin.music.ui.BaseActivity;
 import com.munin.music.ui.vlog.adapter.VideoAdapter;

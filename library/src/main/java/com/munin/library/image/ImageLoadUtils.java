@@ -4,6 +4,7 @@ import android.content.Context;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.munin.library.R;
 import com.munin.library.log.Logger;
 
 /**
@@ -17,7 +18,7 @@ public class ImageLoadUtils {
             Logger.i(TAG, "loadImg: context or imageView is null!");
             return;
         }
-        Glide.with(context).load(url).into(imageView);
+        Glide.with(context).load(url).placeholder(R.drawable.palaceholder).into(imageView);
     }
 
     public static void clearImage(Context context, ImageView imageView) {

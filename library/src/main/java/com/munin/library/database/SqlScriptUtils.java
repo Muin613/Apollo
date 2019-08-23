@@ -5,8 +5,6 @@ import com.munin.library.utils.ContextUtils;
 import com.munin.library.utils.IOUtils;
 import com.munin.library.utils.StringUtils;
 
-import org.greenrobot.greendao.database.Database;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
@@ -18,9 +16,9 @@ import java.io.InputStreamReader;
 public class SqlScriptUtils {
     private static final String TAG = "SqlScriptUtils";
 
-    public static void execute(Database db, String sqlName) {
+    public static void execute(DatabaseDelegate db, String sqlName) {
         if (db == null) {
-            Logger.i(TAG, "update: db is null!");
+            Logger.e(TAG, "update: db is null!");
             return;
         }
         InputStream inputStream = null;

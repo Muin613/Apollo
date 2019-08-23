@@ -69,7 +69,7 @@ public class XRefreshLayout extends FrameLayout implements RefreshLayout, Nested
     public XRefreshLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mVelocityTracker = VelocityTracker.obtain();
-        mTouchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(ViewConfiguration.get(context));
+        mTouchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(ViewConfiguration.get(context))/10;
         mReboundInterpolator = new ViscousFluidInterpolator();
     }
 
@@ -283,7 +283,7 @@ public class XRefreshLayout extends FrameLayout implements RefreshLayout, Nested
             MotionEvent me = obtain(time, time, MotionEvent.ACTION_MOVE, e.getX(), mMoveY + dy, 0);
             super.dispatchTouchEvent(me);
             if (mCurrentState == RefreshState.NONE) {
-                if (mChangeY > 0) {
+                if (mChangeY >=0) {
                     notifyStateChange(RefreshState.PULL_DOWN_TO_REFRESH);
                     notifyHeaderChange();
                 } else {
@@ -595,5 +595,9 @@ public class XRefreshLayout extends FrameLayout implements RefreshLayout, Nested
         // unconsumed nested scroll
         // Dispatch up our nested parent
         mNestedChild.stopNestedScroll();
+    }
+
+    public RefreshState getCurrentState() {
+        return mCurrentState;
     }
 }

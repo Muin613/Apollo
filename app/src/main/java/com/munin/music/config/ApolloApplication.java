@@ -6,7 +6,7 @@ import android.content.Context;
 import com.flutter.videocache.HttpProxyCacheServer;
 import com.munin.library.log.Logger;
 import com.munin.library.utils.ContextUtils;
-import com.munin.music.database.GreenDaoUtils;
+import com.munin.music.database.DataBaseUtils;
 import com.tencent.smtt.sdk.QbSdk;
 
 /**
@@ -28,7 +28,7 @@ public class ApolloApplication extends Application {
                 Logger.e("ApolloApplication", " onViewInitFinished is " + b);
             }
         });
-        GreenDaoUtils.initGreenDao(this);
+        DataBaseUtils.initGreenDao(this);
     }
 
     private HttpProxyCacheServer mProxy;
