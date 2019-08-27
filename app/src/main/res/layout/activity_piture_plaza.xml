@@ -1,15 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <com.munin.library.view.widget.refreshlayout.XRefreshLayout
-        android:layout_width="match_parent"
-        android:id="@+id/refresh_layout"
-        android:layout_height="match_parent">
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/picture_recyclerView"/>
-    </com.munin.library.view.widget.refreshlayout.XRefreshLayout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
 
-</LinearLayout>
+    <data>
+
+        <variable
+            name="adapter"
+            type="androidx.recyclerview.widget.RecyclerView.Adapter" />
+
+        <variable
+            name="layoutManager"
+            type="androidx.recyclerview.widget.RecyclerView.LayoutManager" />
+    </data>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.munin.library.view.widget.refreshlayout.XRefreshLayout
+            android:id="@+id/refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/picture_recyclerView"
+                android:layout_width="match_parent"
+                bind:rvAdapter="@{adapter}"
+                bind:rvLayoutManager="@{layoutManager}"
+                android:layout_height="match_parent" />
+        </com.munin.library.view.widget.refreshlayout.XRefreshLayout>
+
+    </LinearLayout>
+
+
+</layout>
