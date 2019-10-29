@@ -20,6 +20,7 @@ import com.munin.music.net.ApiClient
 import com.munin.music.ui.adapter.PicPlazaAdapter
 import com.munin.music.ui.common.RefreshLayoutManger
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_piture_plaza.*
@@ -76,13 +77,14 @@ class PicturePlazaActivity : BaseActivity(), OnRefreshLoadMoreListener {
 //        DataBaseUtils.getDatabase().userDao().insertItem(user)
     }
 
-
+    var dispose: Disposable? = null
     fun initData() {
-        var data = ApiClient.instance.service.getPictures(page)
-        data.subscribeOn(Schedulers.io())
+        val data = ApiClient.instance.service.getPictures(page)
+        dispose?.dispose()
+        dispose = data.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(Consumer {
-                    Looper.myQueue().addIdleHandler{
+                .subscribe( {
+                    Looper.myQueue().addIdleHandler {
                         lock.getAndSet(false)
                         picturePlazaViewModel?.recomends?.postValue(it.recommends)
                         false
@@ -93,7 +95,7 @@ class PicturePlazaActivity : BaseActivity(), OnRefreshLoadMoreListener {
                     if (refresh_layout.currentState == RefreshState.LOADING) {
                         refresh_layout.finishLoad()
                     }
-                }, Consumer {
+                },  {
                     lock.getAndSet(false)
                     if (refresh_layout.currentState == RefreshState.REFRESHING) {
                         refresh_layout.finishRefresh()
@@ -103,5 +105,10 @@ class PicturePlazaActivity : BaseActivity(), OnRefreshLoadMoreListener {
                         refresh_layout.finishLoad()
                     }
                 })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        dispose?.dispose()
     }
 }

@@ -213,10 +213,16 @@ public class VideoControlManager implements IVideoListener {
     public void destroy() {
         detach();
         if (mPlayer != null) {
-            mPlayer.stop();
             mPlayer.release();
         }
         releaseSurface();
+        mCurrentState = VideoState.STATE_INIT;
+    }
+
+    public void reset(){
+        if (mPlayer != null) {
+            mPlayer.release();
+        }
         mCurrentState = VideoState.STATE_INIT;
     }
 
