@@ -16,4 +16,26 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:onClick="click1" />
+
+    <com.munin.library.view.widget.floating.FloatParentLayout
+        android:layout_width="match_parent"
+        android:background="@color/colorAccent"
+        android:layout_height="500dp">
+        <View android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:onClick="click3"/>
+        <FrameLayout
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:background="@color/red"
+            android:tag="floating"
+            android:layout_weight="1"
+            >
+            <ImageView android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@color/white"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+    </com.munin.library.view.widget.floating.FloatParentLayout>
 </LinearLayout>
