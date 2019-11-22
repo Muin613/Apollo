@@ -9,11 +9,9 @@ import androidx.annotation.NonNull;
 import com.munin.library.log.Logger;
 import com.munin.library.thread.GlobalExecutor;
 import com.munin.library.utils.IOUtils;
-import com.munin.music.media.LameUtils;
-import com.munin.music.media.utils.AudioUtils;
+import com.flutter.mpeg.LameUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 

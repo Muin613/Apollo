@@ -31,7 +31,7 @@
         android:roundIcon="@mipmap/apollo_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".ui.PicturePlazaActivity"
+        <activity android:name=".ui.vlog.VLogAct"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>

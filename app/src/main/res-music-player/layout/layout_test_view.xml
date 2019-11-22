@@ -35,6 +35,7 @@
             <ImageView android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:background="@color/white"
+                android:onClick="click4"
                 android:layout_gravity="center"/>
         </FrameLayout>
     </com.munin.library.view.widget.floating.FloatParentLayout>

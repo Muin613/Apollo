@@ -15,9 +15,7 @@ import com.munin.music.media.sound.NativeAudioTrackHelper;
 public class MusicTestActivity extends AppCompatActivity {
 
     RTAudioRecorderHelper helper;
-    static {
-        System.loadLibrary("x264-lib");
-    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
