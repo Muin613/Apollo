@@ -21,7 +21,7 @@ public abstract class SpCache<T> implements ISpCache<T> {
         if (isInvalid()) {
             String data = mSharedPreferences.getString(getDataKey(), "");
             try {
-                mData = (T) new Gson().fromJson(data, getClass());
+                mData = (T) new Gson().fromJson(data, setDataClass());
             } catch (Exception e) {
                 Logger.e(TAG, "getData: e = " + e.getMessage());
             }
@@ -44,7 +44,7 @@ public abstract class SpCache<T> implements ISpCache<T> {
             SharedPreferences.Editor editor = mSharedPreferences.edit();
             editor.putString(getDataKey(), data);
             editor.apply();
-            mData = (T) new Gson().fromJson(data, getClass());
+            mData = (T) new Gson().fromJson(data, setDataClass());
         } catch (Exception e) {
             Logger.e(TAG, "update: e = " + e.getMessage());
         }
